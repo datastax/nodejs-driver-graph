@@ -1,0 +1,41 @@
+{
+  "name": "dse-tinkerpop",
+  "version": "0.0.1",
+  "description": "TinkerPop Extensions for DataStax Enterprise Node.js Driver",
+  "author": "DataStax",
+  "keywords": [
+    "connection",
+    "gremlin",
+    "datastax",
+    "nosql",
+    "driver",
+    "database",
+    "dse",
+    "graph",
+    "graphdb",
+    "tinkerpop"
+  ],
+  "dependencies": {
+    "dse-driver": "^1.0.4"
+  },
+  "devDependencies": {
+    "mocha": ">= 1.14.0",
+    "rewire": ">= 2.1.0",
+    "mocha-jenkins-reporter": ">= 0.1.9"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/datastax/nodejs-dse-tinkerpop.git"
+  },
+  "bugs": {
+    "url": "https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user"
+  },
+  "license": "SEE LICENSE IN http://www.datastax.com/terms/datastax-dse-driver-license-terms",
+  "scripts":  {
+    "test": "./node_modules/.bin/mocha test/unit -R spec -t 5000",
+    "ci": "./node_modules/.bin/mocha test/unit test/integration -R mocha-jenkins-reporter"
+  },
+  "engines": {
+    "node" : ">=0.10.0"
+   }
+}
