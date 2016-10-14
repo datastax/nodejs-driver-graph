@@ -22,5 +22,13 @@ module.exports = {
     traversalStrategies.addStrategy(new glv.driver.RemoteStrategy(remoteConnection));
     return new glv.process.GraphTraversalSource(null, traversalStrategies);
   },
+  /**
+   * Execute a TinkerPop GraphTraversal asynchronously and invokes the callback when completed or failed.
+   * @param {GraphTraversal} traversal
+   * @param {Function} callback
+   */
+  executeTraversal: function (traversal, callback) {
+    traversal.list(callback);
+  },
   version: require('./package.json').version
 };
