@@ -17,7 +17,7 @@ var helper = {
   getDseVersion: function() {
     var version = process.env['TEST_DSE_VERSION'];
     if (!version) {
-      version = '4.5.2';
+      version = '5.0.3';
     }
     return version;
   },
@@ -79,7 +79,15 @@ var helper = {
         'marko.addEdge("created", lop, "weight", 0.4f);\n' +
         'josh.addEdge("created", ripple, "weight", 1.0f);\n' +
         'josh.addEdge("created", lop, "weight", 0.4f);\n' +
-        'peter.addEdge("created", lop, "weight", 0.2f);'
+        'peter.addEdge("created", lop, "weight", 0.2f);',
+      metaPropsSchema:
+        'schema.propertyKey("sub_prop").Text().create()\n' +
+        'schema.propertyKey("sub_prop2").Text().create()\n' +
+        'schema.propertyKey("meta_prop").Text().properties("sub_prop", "sub_prop2").create()\n' +
+        'schema.vertexLabel("meta_v").properties("meta_prop").create()\n',
+      multiCardinalitySchema:
+        'schema.propertyKey("multi_prop").Text().multiple().create()\n' +
+        'schema.vertexLabel("multi_v").properties("multi_prop").create()'
     }
   },
   ipPrefix: '127.0.0.',
@@ -232,24 +240,26 @@ var helper = {
       return xdescribe(util.format('%s [%s]', name, text), fn);
     });
   },
-  createModernGraph: function (callback) {
-    var client = new Client(helper.getOptions());
-    series([
-      client.connect.bind(client),
-      function testCqlQuery(next) {
-        client.execute(helper.queries.basic, next);
-      },
-      function createGraph(next) {
-        client.executeGraph('system.graph("name1").ifNotExists().create()', null, { graphName: null}, next);
-      },
-      function _makeStrict(next) {
-        client.executeGraph(helper.queries.graph.modernSchema, null, { graphName: 'name1'}, next);
-      },
-      function _allowScans(next) {
-        client.executeGraph(helper.queries.graph.modernGraph, null, { graphName: 'name1'}, next);
-      },
-      client.shutdown.bind(client)
-    ], callback);
+  createModernGraph: function (name) {
+    return (function (callback) {
+      var client = new Client(helper.getOptions());
+      series([
+        client.connect.bind(client),
+        function testCqlQuery(next) {
+          client.execute(helper.queries.basic, next);
+        },
+        function createGraph(next) {
+          client.executeGraph('system.graph(name).ifNotExists().create()', {name: name}, {graphName: null}, next);
+        },
+        function _createSchema(next) {
+          client.executeGraph(helper.queries.graph.modernSchema, null, {graphName: name}, next);
+        },
+        function _loadData(next) {
+          client.executeGraph(helper.queries.graph.modernGraph, null, {graphName: name}, next);
+        },
+        client.shutdown.bind(client)
+      ], callback);
+    })
   },
   ccm: {},
   ads: {}

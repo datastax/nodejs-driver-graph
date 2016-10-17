@@ -13,7 +13,14 @@ var dse = require('dse-driver');
 module.exports = {
   /**
    * Creates a new graph traversal source.
-   * @param {Client} client The <code>dse.Client</code> instance.
+   *
+   * If no arguments are provided, a simple and non-iterable traversal source is used.  This can be used to
+   * generate queries using {@link queryFromTraversal}.
+   *
+   * Alternatively, providing a {@link dse.Client} and optionally {@link GraphQueryOptions} creates an iterable
+   * traversal source that works with a remote DSE graph instance.
+   *
+   * @param {Client} [client] The <code>dse.Client</code> instance.
    * @param {GraphQueryOptions} [options] The graph query options.
    * @returns {GraphTraversalSource} Returns an Apache TinkerPop GraphTraversalSource.
    */
