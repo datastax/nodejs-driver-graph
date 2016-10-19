@@ -23,12 +23,8 @@ module.exports = {
     return new glv.process.GraphTraversalSource(null, traversalStrategies);
   },
   /**
-   * Execute a TinkerPop GraphTraversal asynchronously and invokes the callback when completed or failed.
-   * @param {GraphTraversal} traversal
-   * @param {Function} callback
+   * Returns the representation of Javascript Gremlin Language Variant.
    */
-  executeTraversal: function (traversal, callback) {
-    traversal.list(callback);
-  },
+  tinkerpop: glv,
   version: require('./package.json').version
 };
