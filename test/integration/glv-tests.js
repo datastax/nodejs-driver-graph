@@ -20,7 +20,7 @@ var Point = geo.Point;
 var LineString = geo.LineString;
 var Polygon = geo.Polygon;
 var glv = require('../../lib/tinkerpop');
-var graphTraversalSource = require('../../index').graphTraversalSource;
+var graphTraversalSource = require('../../index').traversalSource;
 
 vdescribe('5.0', 'GLV', function () {
   this.timeout(60000);

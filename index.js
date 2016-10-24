@@ -16,7 +16,7 @@ module.exports = {
    * @param {GraphQueryOptions} [options] The graph query options.
    * @returns {GraphTraversalSource} Returns an Apache TinkerPop GraphTraversalSource.
    */
-  graphTraversalSource: function (client, options) {
+  traversalSource: function (client, options) {
     var traversalStrategies = new glv.process.TraversalStrategies();
     var remoteConnection = new DseRemoteConnection(client, options);
     traversalStrategies.addStrategy(new glv.driver.RemoteStrategy(remoteConnection));
@@ -26,5 +26,16 @@ module.exports = {
    * Returns the representation of Javascript Gremlin Language Variant.
    */
   tinkerpop: glv,
+  /**
+   * Returns the string representation in GraphSON2 format of the traversal to be used in graph query executions.
+   * @param traversal
+   * @returns {String}
+   */
+  queryFromTraversal: function (traversal) {
+    return DseRemoteConnection.getQuery(traversal);
+  },
+  createExecutionProfile: function () {
+    
+  },
   version: require('./package.json').version
 };

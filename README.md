@@ -1,15 +1,15 @@
-# TinkerPop Extensions for DataStax Enterprise Node.js Driver
+# DSE Graph Extensions for DataStax Enterprise Node.js Driver
 
 This package builds on the [DataStax Enterprise Node.js driver][dse-driver], adding functionality for interacting with
 DSE graph features and Apache TinkerPop.
 
-The TinkerPop Extensions for DataStax Enterprise Node.js Driver can be used solely with [DataStax Enterprise][dse]. Please consult
-[the license](#license).
+DSE Graph Extensions for DataStax Enterprise Node.js Driver can be used solely with [DataStax Enterprise][dse]. Please
+consult [the license](#license).
 
 ## Installation
 
 ```bash
-npm install dse-tinkerpop
+npm install dse-graph
 ```
 
 ## Getting Help
@@ -22,14 +22,16 @@ Create a `dse.Client` instance and use it to obtain traversal sources:
 
 ```javascript
 const dse = require('dse-driver');
-const dseTinkerPop = require('dse-tinkerpop');
+const dseGraph = require('dse-graph');
 const client = new dse.Client({ contactPoints: ['h1', 'h2'] });
-const g = dseTinkerPop.graphTraversalSource(client);
+const g = dseGraph.traversalSource(client);
 // print john's friends names
 g.V().has('name','john').out('friends').values('name').list((err, names) => {
   names.forEach(console.log);
 });
 ```
+
+You should reuse the `Client` instance across your application.
 
 ## License
 
