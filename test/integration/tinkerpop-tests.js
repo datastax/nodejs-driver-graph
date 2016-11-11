@@ -69,7 +69,7 @@ vdescribe('5.0', 'DseGraph', function () {
   describe('traversalSource()', function () {
     var schemaCounter = 0;
     it('should execute a simple traversal', wrapTraversal(function (g, done) {
-      g.V().count().list(function(err, result) {
+      g.V().count().toList(function(err, result) {
         assert.ifError(err);
         helper.assertInstanceOf(result, Array);
         assert.strictEqual(result.length, 1);
@@ -137,7 +137,7 @@ vdescribe('5.0', 'DseGraph', function () {
         .select("a", "b", "c")
         .by("name")
         .by("lang")
-        .by(__.in_("created").valueMap('name').fold()).list(function(err, result) {
+        .by(__.in_("created").valueMap('name').fold()).toList(function(err, result) {
         assert.ifError(err);
         // ensure that lop and ripple and their data are the results returned.
         assert.strictEqual(result.length, 2);
@@ -174,7 +174,7 @@ vdescribe('5.0', 'DseGraph', function () {
         .outE('created').as('e', 'f', 'g')
         .inV().as('h')
         .path()
-        .list(function(err, results) {
+        .toList(function(err, results) {
         assert.ifError(err);
         assert.ok(results);
         // There should only be two paths.
@@ -274,7 +274,7 @@ vdescribe('5.0', 'DseGraph', function () {
     }));
     it('should execute traversal with enums', wrapTraversal(function (g, done) {
       var order = tinkerpop.process.order;
-      g.V().hasLabel('person').has('age').order().by('age', order.decr).list(function (err, people) {
+      g.V().hasLabel('person').has('age').order().by('age', order.decr).toList(function (err, people) {
         assert.ifError(err);
         assert.strictEqual(people.length, 4);
         assert.deepEqual(people.map(function (p) {
@@ -366,11 +366,11 @@ vdescribe('5.0', 'DseGraph', function () {
             helper.timesSeries(input.length, function(index, timesNext) {
               var value = input[index];
               // Add vertex and ensure it is properly decoded.
-              g.addV(vertexLabel).property(propertyName, value).list(function (err, result) {
+              g.addV(vertexLabel).property(propertyName, value).toList(function (err, result) {
                 assert.ifError(err);
                 validateVertexResult(result, input[index], vertexLabel, propertyName);
                 // Ensure the vertex is retrievable.
-                g.V().hasLabel(vertexLabel).has(propertyName, value).list(function (err, result) {
+                g.V().hasLabel(vertexLabel).has(propertyName, value).toList(function (err, result) {
                   assert.ifError(err);
                   validateVertexResult(result, input[index], vertexLabel, propertyName);
                   timesNext();
@@ -381,9 +381,9 @@ vdescribe('5.0', 'DseGraph', function () {
         ], done);
       }));
     });
-    describe('Traversal#list()', function () {
+    describe('Traversal#toList()', function () {
       it('should return an Array of traversers', wrapTraversal(function (g, done) {
-        g.V().hasLabel('person').list(function (err, people) {
+        g.V().hasLabel('person').toList(function (err, people) {
           assert.ifError(err);
           helper.assertInstanceOf(people, Array);
           people.forEach(function eachPerson(v) {
@@ -394,7 +394,7 @@ vdescribe('5.0', 'DseGraph', function () {
         });
       }));
       it('should return an empty array of traversers when there is no match', wrapTraversal(function (g, done) {
-        g.V().hasLabel('notFound').list(function (err, result) {
+        g.V().hasLabel('notFound').toList(function (err, result) {
           assert.ifError(err);
           helper.assertInstanceOf(result, Array);
           assert.strictEqual(result.length, 0);

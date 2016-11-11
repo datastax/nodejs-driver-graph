@@ -26,7 +26,7 @@ const dseGraph = require('dse-graph');
 const client = new dse.Client({ contactPoints: ['h1', 'h2'] });
 const g = dseGraph.traversalSource(client);
 // print john's friends names
-g.V().has('name','john').out('friends').values('name').list((err, names) => {
+g.V().has('name','john').out('friends').values('name').toList((err, names) => {
   names.forEach(console.log);
 });
 ```
