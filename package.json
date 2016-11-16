@@ -1,5 +1,5 @@
 {
-  "name": "dse-tinkerpop",
+  "name": "dse-graph",
   "version": "1.0.0-alpha1",
   "description": "TinkerPop Extensions for DataStax Enterprise Node.js Driver",
   "author": "DataStax",
