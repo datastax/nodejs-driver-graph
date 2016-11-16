@@ -202,8 +202,7 @@ vdescribe('5.0', 'DseGraph', function () {
 
           // knows
           assert.strictEqual(knows.label, 'knows');
-          // todo: properties
-          //assert.strictEqual(knows.properties.weight, 1);
+          assert.strictEqual(knows.properties.weight, 1);
           assert.strictEqual(knows.outVLabel, 'person');
           assert.deepEqual(knows.outV, marko.id);
           assert.strictEqual(knows.inVLabel, 'person');
@@ -223,10 +222,9 @@ vdescribe('5.0', 'DseGraph', function () {
 
           // software
           if(software.properties.name[0].value === 'lop') {
-            // todo: properties
-            //assert.strictEqual(created.properties.weight, 0.4);
+            assert.strictEqual(created.properties.weight, 0.4);
           } else {
-            //assert.strictEqual(created.properties.weight, 1.0);
+            assert.strictEqual(created.properties.weight, 1.0);
             assert.strictEqual(software.properties.name[0].value, 'ripple');
           }
 
@@ -297,10 +295,12 @@ vdescribe('5.0', 'DseGraph', function () {
             assert.ifError(err);
             // then the created vertex should have the meta prop present with its sub properties.
             var meta_prop = v.properties['meta_prop'][0];
+            helper.assertInstanceOf(meta_prop, dse.graph.VertexProperty);
             assert.strictEqual(meta_prop.label, 'meta_prop');
             assert.strictEqual(meta_prop.key, 'meta_prop');
             assert.strictEqual(meta_prop.value, 'hello');
-            // TODO: Parse subproperties.
+            // sub properties should be present and have the same values as those inserted.
+            assert.deepEqual(meta_prop.properties, { 'sub_prop' : 'hi', 'sub_prop2' : 'hi2' });
             next();
           });
         }
@@ -486,8 +486,10 @@ function createTraversal(client, options) {
 function validateVertexResult(result, expectedResult, vertexLabel, propertyName) {
   assert.strictEqual(result.length, 1);
   var vertex = result[0];
-  assert.equal(vertex.label, vertexLabel);
-  var propValue = vertex.properties[propertyName][0].value;
+  assert.strictEqual(vertex.label, vertexLabel);
+  var prop = vertex.properties[propertyName][0];
+  helper.assertInstanceOf(prop, dse.graph.VertexProperty);
+  var propValue = prop.value;
   if (typeof expectedResult === 'object') {
     helper.assertInstanceOf(propValue, expectedResult.constructor);
   }
