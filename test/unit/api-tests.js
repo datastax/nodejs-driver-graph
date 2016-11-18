@@ -19,6 +19,7 @@ describe('API', function () {
   });
   it('should expose createExecutionProfile() method', function () {
     assert.strictEqual(typeof api.createExecutionProfile, 'function');
+    assert.strictEqual(api.createExecutionProfile.name, 'createExecutionProfile');
   });
   it('should expose the glv', function () {
     assert.strictEqual(typeof api.tinkerpop, 'object');

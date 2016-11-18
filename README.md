@@ -1,4 +1,4 @@
-# DSE Graph Extensions for DataStax Enterprise Node.js Driver
+# DataStax Enterprise Node.js Driver Extensions for DSE Graph
 
 This package builds on the [DataStax Enterprise Node.js driver][dse-driver], adding functionality for interacting with
 DSE graph features and Apache TinkerPop.

@@ -1,7 +1,7 @@
 {
   "name": "dse-graph",
   "version": "1.0.0-alpha1",
-  "description": "TinkerPop Extensions for DataStax Enterprise Node.js Driver",
+  "description": "DataStax Enterprise Node.js Driver Extensions for DSE Graph",
   "author": "DataStax",
   "keywords": [
     "connection",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type" : "git",
-    "url" : "https://github.com/datastax/nodejs-dse-tinkerpop.git"
+    "url" : "https://github.com/datastax/nodejs-dse-graph.git"
   },
   "bugs": {
     "url": "https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user"
