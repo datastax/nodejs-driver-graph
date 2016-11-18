@@ -34,7 +34,6 @@ module.exports.version = require('./package.json').version;
  * // Create the execution profile once using this method
  * const client = new dse.Client({
    *   contactPoints: ['h1', 'h2'],
-   *   keyspace: 'ks1',
    *   profiles: [
    *     dseGraph.createExecutionProfile('graph-oltp-traversal')
    *   ]
