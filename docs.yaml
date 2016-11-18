@@ -1,0 +1,26 @@
+title: DataStax Enterprise Node.js Driver Extensions for DSE Graph
+summary: DataStax Enterprise Node.js Driver Extensions for DSE Graph
+theme:    datastax
+sections:
+  - title:    Getting started
+    prefix:   /getting-started
+    type:     markdown
+    files:    'doc/getting-started/**/*.md'
+  - title:    API docs
+    prefix:   /api2
+    type:     jsdoc
+    config:   doc/jsdoc.json
+links:
+  - title: Code
+    href:  https://github.com/datastax/nodejs-dse-graph/
+  - title: Issues
+    href:  https://datastax-oss.atlassian.net/projects/NODEJS/issues
+  - title: Mailing List
+    href:  https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user
+  - title: IRC Channel
+    href:  irc://irc.freenode.net/datastax-drivers
+  - title: Npm
+    href:  https://www.npmjs.org/package/dse-graph
+versions:
+  - name: '1.0'
+    ref: 'master'
