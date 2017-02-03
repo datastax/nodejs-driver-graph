@@ -11,10 +11,10 @@ var dse = require('dse-driver');
 var Client = dse.Client;
 var helper = require('../helper');
 var vdescribe = helper.vdescribe;
-var cassandra = require('cassandra-driver');
-var InetAddress = cassandra.types.InetAddress;
-var Uuid = cassandra.types.Uuid;
-var Long = cassandra.types.Long;
+var types = dse.types;
+var InetAddress = types.InetAddress;
+var Uuid = types.Uuid;
+var Long = types.Long;
 var geo = dse.geometry;
 var Point = geo.Point;
 var LineString = geo.LineString;
@@ -74,8 +74,8 @@ vdescribe('5.0', 'DseGraph', function () {
         helper.assertInstanceOf(result, Array);
         assert.strictEqual(result.length, 1);
         var count = result[0];
-        helper.assertInstanceOf(count, cassandra.types.Long);
-        assert.ok(count.greaterThan(cassandra.types.Long.ZERO));
+        helper.assertInstanceOf(count, types.Long);
+        assert.ok(count.greaterThan(types.Long.ZERO));
         done();
       });
     }));
@@ -339,8 +339,8 @@ vdescribe('5.0', 'DseGraph', function () {
       ['Bigint', [Long.fromString('-9007199254740991'), Long.ZERO, Long.fromString('1234')]],
       ['Float', [3.1415927]],
       ['Double', [Math.PI]],
-      ['Decimal', [cassandra.types.BigDecimal.fromString("8675309.9998")]],
-      ['Varint', [cassandra.types.Integer.fromString("8675309")]],
+      ['Decimal', [types.BigDecimal.fromString("8675309.9998")]],
+      ['Varint', [types.Integer.fromString("8675309")]],
       ['Timestamp', [new Date('2016-02-04T02:26:31.657Z'), new Date('2016-01-01T09:30:39.523Z')]],
       ['Blob', [new Buffer('Hello world!', 'utf8')]],
       ['Text', ["", "75", "Lorem Ipsum"]],

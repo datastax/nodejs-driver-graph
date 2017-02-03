@@ -16,8 +16,7 @@
     "tinkerpop"
   ],
   "dependencies": {
-    "dse-driver": "^1.1.0",
-    "cassandra-driver": "^3.1.6"
+    "dse-driver": "datastax/nodejs-driver-dse-private#dse"
   },
   "devDependencies": {
     "mocha": ">= 1.14.0",
