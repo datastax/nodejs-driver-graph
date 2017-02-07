@@ -24,6 +24,14 @@ var helper = {
   },
   /**
    * Determines if the current DSE instance version is greater than or equals to the version provided
+   * @param {String} version The version in string format, dot separated.
+   * @returns {Boolean}
+   */
+  isDseGreaterThan: function (version) {
+    return helper.versionCompare(helper.getDseVersion(), version);
+  },
+  /**
+   * Determines if the current DSE instance version is greater than or equals to the version provided
    * @param {String} instanceVersionStr The version of the current instance.
    * @param {String} version The version in string format, dot separated.
    * @returns {Boolean}

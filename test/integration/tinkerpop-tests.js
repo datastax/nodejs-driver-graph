@@ -333,7 +333,8 @@ vdescribe('5.0', 'DseGraph', function () {
         }
       ], done);
     }));
-    [
+    var is51 = helper.isDseGreaterThan('5.1');
+    var values = [
       // Validate that all supported property types by DSE graph are properly encoded / decoded.
       ['Boolean', [true, false]],
       ['Int', [2147483647, -2147483648, 0, 42]],
@@ -354,8 +355,17 @@ vdescribe('5.0', 'DseGraph', function () {
       ['Polygon', [new Polygon(
         [new Point(35, 10), new Point(45, 45), new Point(15, 40), new Point(10, 20), new Point(35, 10)],
         [new Point(20, 30), new Point(35, 35), new Point(30, 20), new Point(20, 30)]
-      )]]
-    ].forEach(function (args) {
+      )]]];
+
+    if (is51) {
+      values.push.apply(values, [
+        ['Date()', [ new types.LocalDate(2017, 2, 3), new types.LocalDate(-5, 2, 8) ]],
+        //TODO: Wait for DSP-12318 to be resolved
+        //['Time()', [ types.LocalTime.fromString('4:53:03.000000021') ]]
+      ])
+    }
+
+    values.forEach(function (args) {
       var id = schemaCounter++;
       var propType = args[0];
       var input = args[1];
