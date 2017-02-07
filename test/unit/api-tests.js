@@ -28,4 +28,16 @@ describe('API', function () {
   it('should expose version', function () {
     assert.ok(api.version);
   });
+  it('should expose predicates', function () {
+    assert.ok(api.predicates);
+    assert.ok(api.predicates.geo);
+    assert.strictEqual(typeof api.predicates.geo.GeoP, 'function');
+    assert.strictEqual(typeof api.predicates.geo.inside, 'function');
+    assert.strictEqual(typeof api.predicates.geo.unit, 'object');
+    assert.ok(api.predicates.search);
+    assert.strictEqual(typeof api.predicates.search.token, 'function');
+    assert.strictEqual(typeof api.predicates.search.tokenFuzzy, 'function');
+    assert.strictEqual(typeof api.predicates.search.regex, 'function');
+    assert.strictEqual(typeof api.predicates.search.tokenRegex, 'function');
+  });
 });

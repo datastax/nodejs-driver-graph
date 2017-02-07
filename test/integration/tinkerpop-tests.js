@@ -15,14 +15,16 @@ var types = dse.types;
 var InetAddress = types.InetAddress;
 var Uuid = types.Uuid;
 var Long = types.Long;
-var geo = dse.geometry;
-var Point = geo.Point;
-var LineString = geo.LineString;
-var Polygon = geo.Polygon;
+var geometry = dse.geometry;
+var Point = geometry.Point;
+var LineString = geometry.LineString;
+var Polygon = geometry.Polygon;
 var dseGraph = require('../../index');
 var tinkerpop = dseGraph.tinkerpop;
 var P = tinkerpop.process.P;
 var __ = tinkerpop.process.statics;
+var wrapTraversal = helper.wrapTraversal;
+var wrapClient = helper.wrapClient;
 
 vdescribe('5.0', 'DseGraph', function () {
   this.timeout(60000);
@@ -502,36 +504,6 @@ function validateVertexResult(result, expectedResult, vertexLabel, propertyName)
     return;
   }
   assert.strictEqual(propValue, expectedResult);
-}
-
-function wrapTraversal(handler, options) {
-  return wrapClient(function (client, next) {
-    var g = createTraversal(client);
-    handler(g, next);
-  }, options);
-}
-
-function wrapClient(handler, options) {
-  return (function wrappedTestCase(done) {
-    var opts = helper.getOptions(helper.extend(options || {}, {
-      graphOptions : { name: 'name1' },
-      profiles: [
-        dseGraph.createExecutionProfile('traversal', {})
-      ]
-    }));
-    var client = new Client(opts);
-    helper.series([
-      client.connect.bind(client),
-      function testItem(next) {
-        handler(client, next);
-      }
-    ], function seriesFinished(err) {
-      // Shutdown regardless of the result
-      client.shutdown(function shutdownCallback() {
-        done(err);
-      });
-    })
-  });
 }
 
 

@@ -1,7 +1,8 @@
 {
   "source": {
     "include": [
-      "index.js"
+      "index.js",
+      "lib/predicates"
     ]
   },
   "templates": {

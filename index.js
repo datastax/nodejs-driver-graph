@@ -55,6 +55,8 @@ exports.createExecutionProfile = function createExecutionProfile(name, options) 
   return new dse.ExecutionProfile(name, options);
 };
 
+exports.predicates = require('./lib/predicates');
+
 /**
  * Returns the string representation in GraphSON2 format of the traversal to be used in graph query executions.
  * @param traversal The Gremlin traversal instance to be converted to string.

@@ -11,6 +11,7 @@ var path = require('path');
 var assert = require('assert');
 var spawn = require('child_process').spawn;
 var Client = require('dse-driver').Client;
+var dseGraph = require('../');
 
 //noinspection JSUnusedGlobalSymbols
 var helper = {
@@ -87,7 +88,37 @@ var helper = {
         'schema.vertexLabel("meta_v").properties("meta_prop").create()\n',
       multiCardinalitySchema:
         'schema.propertyKey("multi_prop").Text().multiple().create()\n' +
-        'schema.vertexLabel("multi_v").properties("multi_prop").create()'
+        'schema.vertexLabel("multi_v").properties("multi_prop").create()',
+      getAddressBookSchema: function (dseVersion) {
+        return (
+          'schema.config().option("graph.schema_mode").set("production")\n' +
+          'schema.config().option("graph.allow_scan").set("true")\n' +
+          'schema.propertyKey("full_name").Text().create()\n' +
+          'schema.propertyKey("coordinates").' + pointType(dseVersion) + '.create()\n' +
+          'schema.propertyKey("city").Text().create()\n' +
+          'schema.propertyKey("state").Text().create()\n' +
+          'schema.propertyKey("description").Text().create()\n' +
+          'schema.propertyKey("alias").Text().create()\n' +
+          'schema.vertexLabel("user")' +
+          '.properties("full_name", "coordinates", "city", "state", "description").create()\n' +
+          'schema.vertexLabel("user").index("search").search().by("full_name").asString().by("coordinates")' +
+          '.by("description").asText().by("alias").asString().add()\n'
+        );
+      },
+      addressBookGraph: [
+        'g.addV("user").property("full_name", "Paul Thomas Joe").property("city", "Rochester")' +
+          '.property("state", "MN").property("coordinates", Geo.point(-92.46295, 44.0234))' +
+          '.property("description", "Lives by the hospital").property("alias", "mario")',
+        'g.addV("user").property("full_name", "George Bill Steve").property("city", "Minneapolis")' +
+          '.property("state", "MN").property("coordinates", Geo.point(-93.266667, 44.9778))' +
+          '.property("description", "A cold dude").property("alias", "wario")',
+        'g.addV("user").property("full_name", "James Paul Joe").property("city", "Chicago")' +
+          '.property("state", "IL").property("coordinates", Geo.point(-87.684722, 41.836944))' +
+          '.property("description", "Likes to hang out").property("alias", "bowser")',
+        'g.addV("user").property("full_name", "Jill Alice").property("city", "Atlanta")' +
+          '.property("state", "GA").property("coordinates", Geo.point(-84.39, 33.755))' +
+          '.property("description", "Enjoys a very nice cold coca cola").property("alias", "peach")'
+      ]
     }
   },
   ipPrefix: '127.0.0.',
@@ -261,9 +292,41 @@ var helper = {
       ], callback);
     })
   },
+  wrapTraversal: function (handler, options) {
+    return helper.wrapClient(function (client, next) {
+      var g = dseGraph.traversalSource(client);
+      handler(g, next);
+    }, options);
+  },
+  wrapClient: function (handler, options) {
+    return (function wrappedTestCase(done) {
+      var opts = helper.getOptions(helper.extend(options || {}, {
+        graphOptions : { name: 'name1' },
+        profiles: [
+          dseGraph.createExecutionProfile('traversal', {})
+        ]
+      }));
+      var client = new Client(opts);
+      helper.series([
+        client.connect.bind(client),
+        function testItem(next) {
+          handler(client, next);
+        }
+      ], function seriesFinished(err) {
+        // Shutdown regardless of the result
+        client.shutdown(function shutdownCallback() {
+          done(err);
+        });
+      })
+    });
+  },
   ccm: {},
   ads: {}
 };
+
+function pointType(dseVersion) {
+  return dseVersion.indexOf('5.0.') === 0 ? 'Point()' : 'Point().withGeoBounds()';
+}
 
 /**
  * Removes previous and creates a new cluster (create, populate and start)
