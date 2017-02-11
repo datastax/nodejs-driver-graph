@@ -7,6 +7,7 @@ os:
   - ubuntu/trusty64
 cassandra:
   - dse-5.0
+  - dse-5.1
 build:
   - npm: install
   - script: |
