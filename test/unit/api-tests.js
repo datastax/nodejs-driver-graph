@@ -21,10 +21,6 @@ describe('API', function () {
     assert.strictEqual(typeof api.createExecutionProfile, 'function');
     assert.strictEqual(api.createExecutionProfile.name, 'createExecutionProfile');
   });
-  it('should expose the glv', function () {
-    assert.strictEqual(typeof api.tinkerpop, 'object');
-    assert.ok(Object.keys(api.tinkerpop).length > 0);
-  });
   it('should expose version', function () {
     assert.ok(api.version);
   });

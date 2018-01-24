@@ -6,14 +6,9 @@
  */
 'use strict';
 
-var glv = require('./lib/tinkerpop');
+var glv = require('gremlin-javascript');
 var DseRemoteConnection = require('./lib/dse-remote-connection');
 var dse = require('dse-driver');
-
-/**
- * Returns the representation of Javascript Gremlin Language Variant.
- */
-exports.tinkerpop = glv;
 
 /**
  * Returns the version of the package

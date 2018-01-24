@@ -1,8 +1,6 @@
 nodejs:
-  - "0.10"
-  - "0.12"
-  - "4"
   - "6"
+  - "8"
 os:
   - ubuntu/trusty64
 cassandra:

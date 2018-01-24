@@ -18,7 +18,7 @@ var helper = require('../helper');
 var vit = helper.vit;
 var vdescribe = helper.vdescribe;
 var predicates = dseGraph.predicates;
-var tinkerpop = dseGraph.tinkerpop;
+var tinkerpop = require('gremlin-javascript');
 var __ = tinkerpop.process.statics;
 
 vdescribe('5.0', 'DseGraph', function () {

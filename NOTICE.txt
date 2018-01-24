@@ -1,7 +1,2 @@
-DataStax Enterprise Node.js Driver - TinkerPop Extensions
-Copyright 2016 DataStax, Inc.
-
-This product includes the Javascript Gremlin Language Variant from Apache
-TinkerPop (http://tinkerpop.apache.org/).
-Copyright 2015-2016 The Apache Software Foundation.
-Licensed under the Apache License 2.0.
+DataStax Enterprise Node.js Driver Extensions for DSE Graph
+Copyright 2016-2018 DataStax, Inc.

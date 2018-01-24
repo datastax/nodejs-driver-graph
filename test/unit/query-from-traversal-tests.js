@@ -16,14 +16,14 @@ var types = dse.types;
 var geometry = dse.geometry;
 var Point = geometry.Point;
 var Polygon = geometry.Polygon;
-var tinkerpop = dseGraph.tinkerpop;
+var tinkerpop = require('gremlin-javascript');
 var __ = tinkerpop.process.statics;
 
 describe('dseGraph', function () {
   describe('queryFromTraversal()', function () {
     it('should return the expected graphSON2 string', function () {
-      var order = dseGraph.tinkerpop.process.order;
-      var g = new dseGraph.tinkerpop.structure.Graph().traversal();
+      var order = tinkerpop.process.order;
+      var g = new tinkerpop.structure.Graph().traversal();
       [
         [ g.V(), '{"@type":"g:Bytecode","@value":{"step":[["V"]]}}' ],
         [ g.addV('orders').property('uid', types.Uuid.fromString('9907570a-3ac5-4ec2-8894-9530e0659d83')),

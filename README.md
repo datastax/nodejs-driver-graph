@@ -42,7 +42,7 @@ You should reuse the `Client` instance across your application.
 
 ## License
 
-Copyright 2016-2017 DataStax
+Copyright 2016-2018 DataStax
 
 http://www.datastax.com/terms/datastax-dse-driver-license-terms
 
