@@ -6,8 +6,8 @@
  */
 'use strict';
 
-var assert = require('assert');
-var api = require('../../index');
+const assert = require('assert');
+const api = require('../../index');
 
 describe('API', function () {
   it('should expose traversalSource() method', function () {

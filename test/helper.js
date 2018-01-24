@@ -4,19 +4,20 @@
  * Please see the license for details:
  * http://www.datastax.com/terms/datastax-dse-driver-license-terms
  */
-var http = require('http');
-var util = require('util');
-var net = require('net');
-var path = require('path');
-var assert = require('assert');
-var spawn = require('child_process').spawn;
-var Client = require('dse-driver').Client;
-var dseGraph = require('../');
+'use strict';
 
-//noinspection JSUnusedGlobalSymbols
-var helper = {
+const util = require('util');
+const path = require('path');
+const assert = require('assert');
+const spawn = require('child_process').spawn;
+const Client = require('dse-driver').Client;
+const dseGraph = require('../');
+
+function noop () {}
+
+const helper = {
   getDseVersion: function() {
-    var version = process.env['TEST_DSE_VERSION'];
+    let version = process.env['TEST_DSE_VERSION'];
     if (!version) {
       version = '5.0.3';
     }
@@ -37,7 +38,7 @@ var helper = {
    * @returns {Boolean}
    */
   versionCompare: function (instanceVersionStr, version) {
-    var expected = [1, 0]; //greater than or equals to
+    let expected = [1, 0]; //greater than or equals to
     if (version.indexOf('<=') === 0) {
       version = version.substr(2);
       expected = [-1, 0]; //less than or equals to
@@ -46,10 +47,10 @@ var helper = {
       version = version.substr(1);
       expected = [-1]; //less than
     }
-    var instanceVersion = instanceVersionStr.split('.').map(function (x) { return parseInt(x, 10);});
-    var compareVersion = version.split('.').map(function (x) { return parseInt(x, 10) || 0;});
-    for (var i = 0; i < compareVersion.length; i++) {
-      var compare = compareVersion[i] || 0;
+    const instanceVersion = instanceVersionStr.split('.').map(function (x) { return parseInt(x, 10);});
+    const compareVersion = version.split('.').map(function (x) { return parseInt(x, 10) || 0;});
+    for (let i = 0; i < compareVersion.length; i++) {
+      const compare = compareVersion[i] || 0;
       if (instanceVersion[i] > compare) {
         //is greater
         return expected.indexOf(1) >= 0;
@@ -142,8 +143,8 @@ var helper = {
    * @param {ResultSet} result
    */
   keyedById: function (result) {
-    var map = {};
-    var columnKeys = result.columns.map(function (c) { return c.name;});
+    const map = {};
+    const columnKeys = result.columns.map(function (c) { return c.name;});
     if (columnKeys.indexOf('id') < 0 || columnKeys.indexOf('value') < 0) {
       throw new Error('ResultSet must contain the columns id and value');
     }
@@ -184,7 +185,7 @@ var helper = {
    * @returns {Function} A function with a single callback param, applying the fn with parameters
    */
   toTask: function (fn, context) {
-    var params = Array.prototype.slice.call(arguments, 2);
+    const params = Array.prototype.slice.call(arguments, 2);
     return (function (next) {
       params.push(next);
       fn.apply(context, params);
@@ -200,6 +201,7 @@ var helper = {
     if (!helper.isTracing()) {
       return;
     }
+    // eslint-disable-next-line
     console.log('\t...' + util.format.apply(null, arguments));
   },
   wait: function (ms, callback) {
@@ -214,9 +216,9 @@ var helper = {
     });
   },
   extend: function (target) {
-    var sources = Array.prototype.slice.call(arguments, 1);
+    const sources = Array.prototype.slice.call(arguments, 1);
     sources.forEach(function (source) {
-      for (var prop in source) {
+      for (const prop in source) {
         if (source.hasOwnProperty(prop)) {
           target[prop] = source[prop];
         }
@@ -233,7 +235,7 @@ var helper = {
    * @param {Function} callback
    */
   connectAndQuery: function (client, callback) {
-    var self = this;
+    const self = this;
     series([
       client.connect.bind(client),
       function doSomeQueries(next) {
@@ -255,13 +257,14 @@ var helper = {
       if(err) {
         callback(err);
       }
-      var row = result.first();
-      var host = row.result.ip;
+      const row = result.first();
+      const host = row.result.ip;
       callback(null, host);
     });
   },
   requireOptional: function (moduleName) {
     try {
+      // eslint-disable-next-line global-require
       return require(moduleName);
     }
     catch (err) {
@@ -281,7 +284,7 @@ var helper = {
   },
   createModernGraph: function (name) {
     return (function (callback) {
-      var client = new Client(helper.getOptions());
+      const client = new Client(helper.getOptions());
       series([
         client.connect.bind(client),
         function testCqlQuery(next) {
@@ -298,23 +301,23 @@ var helper = {
         },
         client.shutdown.bind(client)
       ], callback);
-    })
+    });
   },
   wrapTraversal: function (handler, options) {
     return helper.wrapClient(function (client, next) {
-      var g = dseGraph.traversalSource(client);
+      const g = dseGraph.traversalSource(client);
       handler(g, next);
     }, options);
   },
   wrapClient: function (handler, options) {
     return (function wrappedTestCase(done) {
-      var opts = helper.getOptions(helper.extend(options || {}, {
+      const opts = helper.getOptions(helper.extend(options || {}, {
         graphOptions : { name: 'name1' },
         profiles: [
           dseGraph.createExecutionProfile('traversal', {})
         ]
       }));
-      var client = new Client(opts);
+      const client = new Client(opts);
       helper.series([
         client.connect.bind(client),
         function testItem(next) {
@@ -325,7 +328,7 @@ var helper = {
         client.shutdown(function shutdownCallback() {
           done(err);
         });
-      })
+      });
     });
   },
   ccm: {},
@@ -344,9 +347,9 @@ function pointType(dseVersion) {
  * @param {Function} callback
  */
 helper.ccm.startAll = function (nodeLength, options, callback) {
-  var self = this;
+  const self = this;
   options = options || {};
-  var version = helper.getDseVersion();
+  const version = helper.getDseVersion();
   helper.trace('Starting test DSE cluster v%s with %s node(s)', version, nodeLength);
   series([
     function (next) {
@@ -357,7 +360,7 @@ helper.ccm.startAll = function (nodeLength, options, callback) {
       });
     },
     function (next) {
-      var create = ['create', 'test', '--dse', '-v', version];
+      let create = ['create', 'test', '--dse', '-v', version];
       if (process.env['TEST_DSE_DIR']) {
         create = ['create', 'test', '--install-dir=' + process.env['TEST_DSE_DIR']];
         helper.trace('With', create[2]);
@@ -368,7 +371,7 @@ helper.ccm.startAll = function (nodeLength, options, callback) {
       self.exec(create, helper.wait(options.sleep, next));
     },
     function (next) {
-      var populate = ['populate', '-n', nodeLength.toString()];
+      const populate = ['populate', '-n', nodeLength.toString()];
       if (options.vnodes) {
         populate.push('--vnodes');
       }
@@ -400,7 +403,7 @@ helper.ccm.startAll = function (nodeLength, options, callback) {
       });
     },
     function (next) {
-      var start = ['start', '--wait-for-binary-proto'];
+      const start = ['start', '--wait-for-binary-proto'];
       if (util.isArray(options.jvmArgs)) {
         options.jvmArgs.forEach(function (arg) {
           start.push('--jvm_arg', arg);
@@ -432,7 +435,7 @@ helper.ccm.startAllTask = function (nodeLength, options) {
  * @param {Function} callback
  */
 helper.ccm.bootstrapNode = function (nodeIndex, callback) {
-  var ipPrefix = helper.ipPrefix;
+  const ipPrefix = helper.ipPrefix;
   helper.trace('bootstrapping node', nodeIndex);
   helper.ccm.exec([
     'add',
@@ -458,7 +461,7 @@ helper.ccm.setWorkload = function (nodeIndex, workloads, callback) {
     'node' + nodeIndex,
     'setworkload',
     workloads.join(',')
-  ], callback)
+  ], callback);
 };
 
 /**
@@ -486,15 +489,15 @@ helper.ccm.spawn = function (processName, params, callback) {
     callback = function () {};
   }
   params = params || [];
-  var originalProcessName = processName;
+  const originalProcessName = processName;
   if (process.platform.indexOf('win') === 0) {
     params = ['/c', processName].concat(params);
     processName = 'cmd.exe';
   }
-  var p = spawn(processName, params);
-  var stdoutArray= [];
-  var stderrArray= [];
-  var closing = 0;
+  const p = spawn(processName, params);
+  const stdoutArray= [];
+  const stderrArray= [];
+  let closing = 0;
   p.stdout.setEncoding('utf8');
   p.stderr.setEncoding('utf8');
   p.stdout.on('data', function (data) {
@@ -510,8 +513,8 @@ helper.ccm.spawn = function (processName, params, callback) {
       //avoid calling multiple times
       return;
     }
-    var info = {code: code, stdout: stdoutArray, stderr: stderrArray};
-    var err = null;
+    const info = {code: code, stdout: stdoutArray, stderr: stderrArray};
+    let err = null;
     if (code !== 0) {
       err = new Error(
         'Error executing ' + originalProcessName + ':\n' +
@@ -533,9 +536,9 @@ helper.ccm.remove = function (callback) {
  * @param callback
  */
 helper.ccm.waitForUp = function (callback) {
-  var started = false;
-  var retryCount = 0;
-  var self = this;
+  let started = false;
+  let retryCount = 0;
+  const self = this;
   whilst(function () {
     return !started && retryCount < 60;
   }, function iterator (next) {
@@ -544,7 +547,7 @@ helper.ccm.waitForUp = function (callback) {
       if (err) {
         return next(err);
       }
-      var regex = /Starting listening for CQL clients/mi;
+      const regex = /Starting listening for CQL clients/mi;
       started = regex.test(info.stdout.join(''));
       retryCount++;
       if (!started) {
@@ -561,7 +564,7 @@ helper.ccm.waitForUp = function (callback) {
  * @param subPath
  */
 helper.ccm.getPath = function (subPath) {
-  var ccmPath = process.env.CCM_PATH;
+  let ccmPath = process.env.CCM_PATH;
   if (!ccmPath) {
     ccmPath = (process.platform === 'win32') ? process.env.HOMEPATH : process.env.HOME;
     ccmPath = path.join(ccmPath, 'workspace/tools/ccm');
@@ -581,7 +584,7 @@ function executeIfVersion (testVersion, func, args) {
 }
 
 helper.ads._execute = function(processName, params, cb) {
-  var originalProcessName = processName;
+  const originalProcessName = processName;
   if (process.platform.indexOf('win') === 0) {
     params = ['/c', processName].concat(params);
     processName = 'cmd.exe';
@@ -589,14 +592,14 @@ helper.ads._execute = function(processName, params, cb) {
   helper.trace('Executing: ' + processName + ' ' + params.join(" "));
 
   // If process hasn't completed in 10 seconds.
-  var timeout = undefined;
+  let timeout = undefined;
   if(cb) {
     timeout = setTimeout(function() {
       cb("Timed out while waiting for " + processName + " to complete.");
     }, 10000);
   }
 
-  var p = spawn(processName, params, {env:{KRB5_CONFIG: this.getKrb5ConfigPath()}});
+  const p = spawn(processName, params, {env:{KRB5_CONFIG: this.getKrb5ConfigPath()}});
   p.stdout.setEncoding('utf8');
   p.stderr.setEncoding('utf8');
   p.stdout.on('data', function (data) {
@@ -640,11 +643,11 @@ helper.ads.listTickets = function(cb) {
  * @param {Function} cb Callback to invoke on completion.
  */
 helper.ads.acquireTicket = function(username, principal, cb) {
-  var keytab = this.getKeytabPath(username);
+  const keytab = this.getKeytabPath(username);
 
   // Use ktutil on windows, kinit otherwise.
-  var processName = 'kinit';
-  var params = ['-t', keytab, '-k', principal];
+  const processName = 'kinit';
+  const params = ['-t', keytab, '-k', principal];
   if (process.platform.indexOf('win') === 0) {
     // Not really sure what to do here yet...
   }
@@ -664,8 +667,8 @@ helper.ads.destroyTicket = function(principal, cb) {
   }
 
   // Use ktutil on windows, kdestroy otherwise.
-  var processName = 'kdestroy';
-  var params = [];
+  const processName = 'kdestroy';
+  const params = [];
   if (process.platform.indexOf('win') === 0) {
     // Not really sure what to do here yet...
   }
@@ -697,7 +700,7 @@ helper.ads.stop = function(cb) {
  * Gets the path of the embedded-ads jar.  Resolved from ADS_JAR environment variable or $HOME/embedded-ads.jar.
  */
 helper.ads.getJar = function () {
-  var adsJar = process.env.ADS_JAR;
+  let adsJar = process.env.ADS_JAR;
   if (!adsJar) {
     helper.trace("ADS_JAR environment variable not set, using $HOME/embedded-ads.jar");
     adsJar = (process.platform === 'win32') ? process.env.HOMEPATH : process.env.HOME;
@@ -727,8 +730,8 @@ function series(arr, callback) {
     throw new TypeError('First parameter must be an Array');
   }
   callback = callback || noop;
-  var index = 0;
-  var sync;
+  let index = 0;
+  let sync;
   next();
   function next(err, result) {
     if (err) {
@@ -761,8 +764,8 @@ function timesSeries(count, iteratorFunction, callback) {
   if (isNaN(count) || count < 1) {
     return callback();
   }
-  var index = 1;
-  var sync;
+  let index = 1;
+  let sync;
   iteratorFunction(0, next);
   if (sync === undefined) {
     sync = false;
@@ -777,7 +780,7 @@ function timesSeries(count, iteratorFunction, callback) {
     if (sync === undefined) {
       sync = true;
     }
-    var i = index++;
+    const i = index++;
     if (sync) {
       //Prevent "Maximum call stack size exceeded"
       return process.nextTick(function () {
@@ -799,12 +802,12 @@ function eachSeries(arr, fn, callback) {
     throw new TypeError('First parameter is not an Array');
   }
   callback = callback || noop;
-  var length = arr.length;
+  const length = arr.length;
   if (length === 0) {
     return callback();
   }
-  var sync;
-  var index = 1;
+  let sync;
+  let index = 1;
   fn(arr[0], next);
   if (sync === undefined) {
     sync = false;
@@ -835,7 +838,7 @@ function eachSeries(arr, fn, callback) {
  * @param {Function} callback
  */
 function whilst(condition, fn, callback) {
-  var sync = 0;
+  let sync = 0;
   next();
   function next(err) {
     if (err) {

@@ -6,29 +6,28 @@
  */
 'use strict';
 
-var util = require('util');
-var assert = require('assert');
-var dse = require('dse-driver');
-var dseGraph = require('../../index');
-var Client = dse.Client;
-var geometry = dse.geometry;
-var Point = geometry.Point;
-var Polygon = geometry.Polygon;
-var helper = require('../helper');
-var vit = helper.vit;
-var vdescribe = helper.vdescribe;
-var predicates = dseGraph.predicates;
-var tinkerpop = require('gremlin-javascript');
-var __ = tinkerpop.process.statics;
+const assert = require('assert');
+const dse = require('dse-driver');
+const dseGraph = require('../../index');
+const Client = dse.Client;
+const geometry = dse.geometry;
+const Point = geometry.Point;
+const Polygon = geometry.Polygon;
+const helper = require('../helper');
+const vit = helper.vit;
+const vdescribe = helper.vdescribe;
+const predicates = dseGraph.predicates;
+const tinkerpop = require('gremlin-javascript');
+const __ = tinkerpop.process.statics;
 
 vdescribe('5.0', 'DseGraph', function () {
   this.timeout(60000);
   before(helper.ccm.startAllTask(1, {workloads: ['graph', 'solr']}));
   after(helper.ccm.remove.bind(helper.ccm));
   describe('predicates', function () {
-    var addressBookGraphName = 'address_book';
-    var geo = predicates.geo;
-    var search = predicates.search;
+    const addressBookGraphName = 'address_book';
+    const geo = predicates.geo;
+    const search = predicates.search;
     before(helper.wrapClient(function (client, done) {
       helper.series([
         helper.toTask(client.executeGraph, client,
@@ -46,8 +45,8 @@ vdescribe('5.0', 'DseGraph', function () {
         }
       ], done);
     }));
-    var client = newClientInstance(addressBookGraphName);
-    var g = dseGraph.traversalSource(client, { graphName: addressBookGraphName });
+    const client = newClientInstance(addressBookGraphName);
+    const g = dseGraph.traversalSource(client, { graphName: addressBookGraphName });
     before(client.connect.bind(client));
     after(client.shutdown.bind(client));
     describe('search', function () {
@@ -96,7 +95,7 @@ vdescribe('5.0', 'DseGraph', function () {
             [ 'Paul Thomas Joe' ]
           ));
         it('should search by regex()',
-            // Only two people with names containing pattern for Paul.
+          // Only two people with names containing pattern for Paul.
           testTraversal(
             g.V().has('user', 'full_name', search.regex('.*Paul.*')).values('full_name'),
             [ 'Paul Thomas Joe', 'James Paul Joe' ]
@@ -140,7 +139,7 @@ vdescribe('5.0', 'DseGraph', function () {
               [ 'Paul Thomas Joe', 'George Bill Steve' ]
             ));
           it('with meters',
-              // Should only be on person within 350,000 M of Des Moines, IA (-93.60, 41.60) (Rochester)
+            // Should only be on person within 350,000 M of Des Moines, IA (-93.60, 41.60) (Rochester)
             testTraversal(
               g.V().has('user', 'coordinates', geo.inside(new Point(-93.60, 41.60), 350000, geo.unit.meters)).values('full_name'),
               [ 'Paul Thomas Joe' ]
@@ -167,8 +166,8 @@ function testTraversal(t, expected) {
       setImmediate(function () {
         assert.ifError(err);
         if (Array.isArray(expected)) {
-          var sExpected = expected.slice().sort();
-          var sReturn = returnValue.slice().sort();
+          const sExpected = expected.slice().sort();
+          const sReturn = returnValue.slice().sort();
           assert.deepEqual(sReturn, sExpected);
         }
         else {

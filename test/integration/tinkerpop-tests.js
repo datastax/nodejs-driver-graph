@@ -6,26 +6,26 @@
  */
 'use strict';
 
-var util = require('util');
-var assert = require('assert');
-var dse = require('dse-driver');
-var Client = dse.Client;
-var helper = require('../helper');
-var vdescribe = helper.vdescribe;
-var types = dse.types;
-var InetAddress = types.InetAddress;
-var Uuid = types.Uuid;
-var Long = types.Long;
-var geometry = dse.geometry;
-var Point = geometry.Point;
-var LineString = geometry.LineString;
-var Polygon = geometry.Polygon;
-var dseGraph = require('../../index');
-var tinkerpop = require('gremlin-javascript');
-var P = tinkerpop.process.P;
-var __ = tinkerpop.process.statics;
-var wrapTraversal = helper.wrapTraversal;
-var wrapClient = helper.wrapClient;
+const util = require('util');
+const assert = require('assert');
+const dse = require('dse-driver');
+const Client = dse.Client;
+const helper = require('../helper');
+const vdescribe = helper.vdescribe;
+const types = dse.types;
+const InetAddress = types.InetAddress;
+const Uuid = types.Uuid;
+const Long = types.Long;
+const geometry = dse.geometry;
+const Point = geometry.Point;
+const LineString = geometry.LineString;
+const Polygon = geometry.Polygon;
+const dseGraph = require('../../index');
+const tinkerpop = require('gremlin-javascript');
+const P = tinkerpop.process.P;
+const __ = tinkerpop.process.statics;
+const wrapTraversal = helper.wrapTraversal;
+const wrapClient = helper.wrapClient;
 
 vdescribe('5.0', 'DseGraph', function () {
   this.timeout(60000);
@@ -38,7 +38,7 @@ vdescribe('5.0', 'DseGraph', function () {
   after(helper.ccm.remove.bind(helper.ccm));
   describe('Client#executeGraph()', function () {
     it('should execute a GraphSON query', wrapClient(function (client, done) {
-      var queries = [
+      const queries = [
         '{"@type": "g:Bytecode", "@value": {"step": [["V"]]}}',
         '{"@type": "g:Bytecode", "@value": {"step": [["V"],["count"]]}}'
       ];
@@ -53,15 +53,15 @@ vdescribe('5.0', 'DseGraph', function () {
   });
   describe('queryFromTraversal()', function() {
     it('should produce a query string usable with DseClient#executeGraph()', wrapClient(function (client, done) {
-      var g = dseGraph.traversalSource();
-      var query = dseGraph.queryFromTraversal(g.V().hasLabel('software').valueMap());
+      const g = dseGraph.traversalSource();
+      const query = dseGraph.queryFromTraversal(g.V().hasLabel('software').valueMap());
       client.executeGraph(query, {}, { executionProfile: 'traversal' }, function(err, result) {
         assert.ifError(err);
-        var res = result.toArray();
+        const res = result.toArray();
         res.forEach(function(software) {
           assert.strictEqual(software['lang'][0], 'java');
         });
-        var names = res.map(function(s) {
+        const names = res.map(function(s) {
           return s['name'][0];
         }).sort();
         assert.deepEqual(names, ['lop', 'ripple']);
@@ -70,13 +70,13 @@ vdescribe('5.0', 'DseGraph', function () {
     }));
   });
   describe('traversalSource()', function () {
-    var schemaCounter = 0;
+    let schemaCounter = 0;
     it('should execute a simple traversal', wrapTraversal(function (g, done) {
       g.V().count().toList(function(err, result) {
         assert.ifError(err);
         helper.assertInstanceOf(result, Array);
         assert.strictEqual(result.length, 1);
-        var count = result[0];
+        const count = result[0];
         helper.assertInstanceOf(count, types.Long);
         assert.ok(count.greaterThan(types.Long.ZERO));
         done();
@@ -93,7 +93,7 @@ vdescribe('5.0', 'DseGraph', function () {
           assert.strictEqual(v2.name[0], 'marko');
           done();
         });
-      })
+      });
     }));
     it('should use edge id as parameter', wrapTraversal(function (g, done) {
       // given an existing edge
@@ -124,7 +124,7 @@ vdescribe('5.0', 'DseGraph', function () {
       // then id should be a map with expected values.
       // Note: this is pretty dependent on DSE Graph's underlying id structure which may vary in the future.
       g.V().hasLabel('person').has('name', 'marko').one(function (err, result) {
-        var id = result.id;
+        const id = result.id;
         // ~label, community_id, member_id
         assert.strictEqual(Object.keys(id).length, 3);
         assert.strictEqual(id['~label'], "person");
@@ -141,29 +141,29 @@ vdescribe('5.0', 'DseGraph', function () {
         .by("name")
         .by("lang")
         .by(__.in_("created").valueMap('name').fold()).toList(function(err, result) {
-        assert.ifError(err);
-        // ensure that lop and ripple and their data are the results returned.
-        assert.strictEqual(result.length, 2);
-        var software = result.map(function (entry) {
-          return entry['a']
-        }).sort();
-        assert.deepEqual(software, ['lop', 'ripple']);
-        result.forEach(function (entry) {
-          // both software are written in java.
-          assert.strictEqual(entry['b'], 'java');
-          var people = entry['c'].map(function(e) {
-            return e['name'][0];
+          assert.ifError(err);
+          // ensure that lop and ripple and their data are the results returned.
+          assert.strictEqual(result.length, 2);
+          const software = result.map(function (entry) {
+            return entry['a'];
           }).sort();
-          if(entry['a'] === 'lop') {
+          assert.deepEqual(software, ['lop', 'ripple']);
+          result.forEach(function (entry) {
+          // both software are written in java.
+            assert.strictEqual(entry['b'], 'java');
+            const people = entry['c'].map(function(e) {
+              return e['name'][0];
+            }).sort();
+            if(entry['a'] === 'lop') {
             // lop, 'c' should contain marko, josh, peter.
-            assert.deepEqual(people, ['josh', 'marko', 'peter']);
-          } else {
+              assert.deepEqual(people, ['josh', 'marko', 'peter']);
+            } else {
             // only peter made ripple.
-            assert.deepEqual(people, ['josh']);
-          }
+              assert.deepEqual(people, ['josh']);
+            }
+          });
+          done();
         });
-        done();
-      });
     }));
     it('should retrieve path with labels', wrapTraversal(function (g, done) {
       // find all path traversals for a person whom Marko knows that has created software and what
@@ -178,64 +178,64 @@ vdescribe('5.0', 'DseGraph', function () {
         .inV().as('h')
         .path()
         .toList(function(err, results) {
-        assert.ifError(err);
-        assert.ok(results);
-        // There should only be two paths.
-        assert.strictEqual(results.length, 2);
-        results.forEach(function(path) {
+          assert.ifError(err);
+          assert.ok(results);
+          // There should only be two paths.
+          assert.strictEqual(results.length, 2);
+          results.forEach(function(path) {
           // ensure the labels are organized as requested.
-          var labels = path.labels;
-          assert.strictEqual(labels.length, 5);
-          assert.deepEqual(labels, [['a'], ['b'], ['c', 'd'], ['e', 'f', 'g'], ['h']]);
+            const labels = path.labels;
+            assert.strictEqual(labels.length, 5);
+            assert.deepEqual(labels, [['a'], ['b'], ['c', 'd'], ['e', 'f', 'g'], ['h']]);
 
-          // ensure the returned path matches what was expected and that each object
-          // has the expected contents.
-          var objects = path.objects;
-          assert.strictEqual(objects.length, 5);
-          var marko = objects[0];
-          var knows = objects[1];
-          var josh = objects[2];
-          var created = objects[3];
-          var software = objects[4];
+            // ensure the returned path matches what was expected and that each object
+            // has the expected contents.
+            const objects = path.objects;
+            assert.strictEqual(objects.length, 5);
+            const marko = objects[0];
+            const knows = objects[1];
+            const josh = objects[2];
+            const created = objects[3];
+            const software = objects[4];
 
-          // marko
-          assert.strictEqual(marko.label, 'person');
-          assert.strictEqual(marko.properties.name[0].value, 'marko');
-          assert.strictEqual(marko.properties.age[0].value, 29);
+            // marko
+            assert.strictEqual(marko.label, 'person');
+            assert.strictEqual(marko.properties.name[0].value, 'marko');
+            assert.strictEqual(marko.properties.age[0].value, 29);
 
-          // knows
-          assert.strictEqual(knows.label, 'knows');
-          assert.strictEqual(knows.properties.weight, 1);
-          assert.strictEqual(knows.outVLabel, 'person');
-          assert.deepEqual(knows.outV, marko.id);
-          assert.strictEqual(knows.inVLabel, 'person');
-          assert.deepEqual(knows.inV, josh.id);
+            // knows
+            assert.strictEqual(knows.label, 'knows');
+            assert.strictEqual(knows.properties.weight, 1);
+            assert.strictEqual(knows.outVLabel, 'person');
+            assert.deepEqual(knows.outV, marko.id);
+            assert.strictEqual(knows.inVLabel, 'person');
+            assert.deepEqual(knows.inV, josh.id);
 
-          // josh
-          assert.strictEqual(josh.label, 'person');
-          assert.strictEqual(josh.properties.name[0].value, 'josh');
-          assert.strictEqual(josh.properties.age[0].value, 32);
+            // josh
+            assert.strictEqual(josh.label, 'person');
+            assert.strictEqual(josh.properties.name[0].value, 'josh');
+            assert.strictEqual(josh.properties.age[0].value, 32);
 
-          // who created
-          assert.strictEqual(created.label, 'created');
-          assert.strictEqual(created.outVLabel, 'person');
-          assert.deepEqual(created.outV, josh.id);
-          assert.strictEqual(created.inVLabel, 'software');
-          assert.deepEqual(created.inV, software.id);
+            // who created
+            assert.strictEqual(created.label, 'created');
+            assert.strictEqual(created.outVLabel, 'person');
+            assert.deepEqual(created.outV, josh.id);
+            assert.strictEqual(created.inVLabel, 'software');
+            assert.deepEqual(created.inV, software.id);
 
-          // software
-          if(software.properties.name[0].value === 'lop') {
-            assert.strictEqual(created.properties.weight, 0.4);
-          } else {
-            assert.strictEqual(created.properties.weight, 1.0);
-            assert.strictEqual(software.properties.name[0].value, 'ripple');
-          }
+            // software
+            if(software.properties.name[0].value === 'lop') {
+              assert.strictEqual(created.properties.weight, 0.4);
+            } else {
+              assert.strictEqual(created.properties.weight, 1.0);
+              assert.strictEqual(software.properties.name[0].value, 'ripple');
+            }
 
-          assert.strictEqual(software.label, 'software');
-          assert.strictEqual(software.properties.lang[0].value, 'java');
+            assert.strictEqual(software.label, 'software');
+            assert.strictEqual(software.properties.lang[0].value, 'java');
+          });
+          done();
         });
-        done();
-      });
     }));
     it('should handle subgraph', wrapTraversal(function (g, done) {
       // retrieve a subgraph on the knows relationship, this omits the created edges.
@@ -245,7 +245,7 @@ vdescribe('5.0', 'DseGraph', function () {
         assert.strictEqual(graph['vertices'].length, 3);
         assert.strictEqual(graph['edges'].length, 2);
         done();
-      })
+      });
     }));
     xit('should handle tree', wrapTraversal(function (g, done) {
       g.V().hasLabel("person").out("knows").out("created").tree().by("name").one(function (err, tree) {
@@ -253,12 +253,12 @@ vdescribe('5.0', 'DseGraph', function () {
         assert.strictEqual(tree.length, 1);
 
         // root should be marko.
-        var marko = tree[0];
+        const marko = tree[0];
         assert.strictEqual(marko['key'], 'marko');
         assert.strictEqual(marko['value'].length, 1);
 
         // who has one node, josh
-        var josh = marko['value'][0];
+        const josh = marko['value'][0];
         assert.strictEqual(josh['key'], 'josh');
         assert.strictEqual(josh['value'].length, 2);
 
@@ -266,7 +266,7 @@ vdescribe('5.0', 'DseGraph', function () {
         josh['value'].forEach(function(software) {
           assert.strictEqual(software['value'].length, 0);
         });
-        var names = josh['value'].map(function(s) {
+        const names = josh['value'].map(function(s) {
           return s['key'];
         }).sort();
         assert.deepEqual(names, ['lop', 'ripple']);
@@ -274,7 +274,7 @@ vdescribe('5.0', 'DseGraph', function () {
       });
     }));
     it('should execute traversal with enums', wrapTraversal(function (g, done) {
-      var order = tinkerpop.process.order;
+      const order = tinkerpop.process.order;
       g.V().hasLabel('person').has('age').order().by('age', order.decr).toList(function (err, people) {
         assert.ifError(err);
         assert.strictEqual(people.length, 4);
@@ -286,7 +286,7 @@ vdescribe('5.0', 'DseGraph', function () {
     }));
     it('should be able to create and retrieve a vertex with a vertex property with meta properties', wrapClient(function (client, done) {
       // This currently doesn't work because VertexProperty doesn't support meta properties.
-      var g = createTraversal(client);
+      const g = createTraversal(client);
       helper.series([
         function createSchema(next) {
           // given a schema that defines meta properties.
@@ -297,7 +297,7 @@ vdescribe('5.0', 'DseGraph', function () {
           g.addV('meta_v').property('meta_prop', 'hello', 'sub_prop', 'hi', 'sub_prop2', 'hi2').one(function (err, v) {
             assert.ifError(err);
             // then the created vertex should have the meta prop present with its sub properties.
-            var meta_prop = v.properties['meta_prop'][0];
+            const meta_prop = v.properties['meta_prop'][0];
             helper.assertInstanceOf(meta_prop, dse.graph.VertexProperty);
             assert.strictEqual(meta_prop.label, 'meta_prop');
             assert.strictEqual(meta_prop.key, 'meta_prop');
@@ -310,7 +310,7 @@ vdescribe('5.0', 'DseGraph', function () {
       ], done);
     }));
     it('should be able create and retrieve a vertex with a vertex property with multi-cardinality', wrapClient(function (client, done) {
-      var g = createTraversal(client);
+      const g = createTraversal(client);
       helper.series([
         function createSchema(next) {
           // given a schema that defines multiple cardinality properties.
@@ -323,19 +323,19 @@ vdescribe('5.0', 'DseGraph', function () {
             .property("multi_prop", "Sweet")
             .property("multi_prop", "World").one(function (err, v) {
             // then the created vertex should have the multi-cardinality property present with its values.
-            assert.ifError(err);
-            var multi_props = v.properties['multi_prop'];
-            var values = multi_props.map(function(e) {
-              return e.value;
-            }).sort();
-            assert.deepEqual(values, ['Hello', 'Sweet', 'World']);
-            next();
-          });
+              assert.ifError(err);
+              const multi_props = v.properties['multi_prop'];
+              const values = multi_props.map(function(e) {
+                return e.value;
+              }).sort();
+              assert.deepEqual(values, ['Hello', 'Sweet', 'World']);
+              next();
+            });
         }
       ], done);
     }));
-    var is51 = helper.isDseGreaterThan('5.1');
-    var values = [
+    const is51 = helper.isDseGreaterThan('5.1');
+    const values = [
       // Validate that all supported property types by DSE graph are properly encoded / decoded.
       ['Boolean', [true, false]],
       ['Int', [2147483647, -2147483648, 0, 42]],
@@ -346,7 +346,7 @@ vdescribe('5.0', 'DseGraph', function () {
       ['Decimal', [types.BigDecimal.fromString("8675309.9998")]],
       ['Varint', [types.Integer.fromString("8675309")]],
       ['Timestamp', [new Date('2016-02-04T02:26:31.657Z'), new Date('2016-01-01T09:30:39.523Z')]],
-      ['Blob', [new Buffer('Hello world!', 'utf8')]],
+      ['Blob', [Buffer.from('Hello world!', 'utf8')]],
       ['Text', ["", "75", "Lorem Ipsum"]],
       ['Uuid', [Uuid.random()]],
       ['Inet', [InetAddress.fromString("127.0.0.1"), InetAddress.fromString("::1"),
@@ -363,21 +363,21 @@ vdescribe('5.0', 'DseGraph', function () {
         ['Date()', [ new types.LocalDate(2017, 2, 3), new types.LocalDate(-5, 2, 8) ]],
         //TODO: Wait for DSP-12318 to be resolved
         //['Time()', [ types.LocalTime.fromString('4:53:03.000000021') ]]
-      ])
+      ]);
     }
 
     values.forEach(function (args) {
-      var id = schemaCounter++;
-      var propType = args[0];
-      var input = args[1];
+      const id = schemaCounter++;
+      const propType = args[0];
+      const input = args[1];
       it(util.format('should create and retrieve vertex with property of type %s', propType), wrapTraversal(function(g, done) {
-        var vertexLabel = "vertex" + id;
-        var propertyName = "prop" + id;
+        const vertexLabel = "vertex" + id;
+        const propertyName = "prop" + id;
 
         helper.series([
           function addVertex(next) {
             helper.timesSeries(input.length, function(index, timesNext) {
-              var value = input[index];
+              const value = input[index];
               // Add vertex and ensure it is properly decoded.
               g.addV(vertexLabel).property(propertyName, value).toList(function (err, result) {
                 assert.ifError(err);
@@ -387,7 +387,7 @@ vdescribe('5.0', 'DseGraph', function () {
                   assert.ifError(err);
                   validateVertexResult(result, input[index], vertexLabel, propertyName);
                   timesNext();
-                })
+                });
               });
             }, next);
           }
@@ -433,14 +433,14 @@ vdescribe('5.0', 'DseGraph', function () {
       }));
     });
     describe('createExecutionProfile()', function() {
-      var opts = helper.getOptions(helper.extend({}, {
+      const opts = helper.getOptions(helper.extend({}, {
         graphOptions: {name: 'name2'},
         profiles: [
           dseGraph.createExecutionProfile('analytics', {graphOptions: {source: 'a'}})
         ]
       }));
 
-      var client = new Client(opts);
+      const client = new Client(opts);
 
       before(helper.createModernGraph('name2'));
       after(client.shutdown.bind(client));
@@ -451,7 +451,7 @@ vdescribe('5.0', 'DseGraph', function () {
       // The peerPressure step requires a OLAP GraphComputer, thus this should fail without the
       // analytics traversal source.
       function executeAnalyticsQueries(traversal, expectPass) {
-        var pass = expectPass === undefined ? true : expectPass;
+        const pass = expectPass === undefined ? true : expectPass;
         return function (done) {
           traversal.V().hasLabel("person")
             .peerPressure().by("cluster")
@@ -459,7 +459,7 @@ vdescribe('5.0', 'DseGraph', function () {
             .one(function (err, result) {
               if (pass) {
                 assert.ifError(err);
-                var clusters = Object.keys(result).map(function(k) {
+                const clusters = Object.keys(result).map(function(k) {
                   return result[k].sort();
                 }).sort(function(a, b) {
                   return a.length - b.length;
@@ -470,12 +470,12 @@ vdescribe('5.0', 'DseGraph', function () {
               }
               done();
             });
-        }
+        };
       }
 
-      var a0 = createTraversal(client, {executionProfile: 'analytics'});
-      var a1 = createTraversal(client, {graphSource: 'a'});
-      var g = createTraversal(client);
+      const a0 = createTraversal(client, {executionProfile: 'analytics'});
+      const a1 = createTraversal(client, {graphSource: 'a'});
+      const g = createTraversal(client);
 
       // should succeed since using 'a' source.
       it('should make an OLAP query using \'a\' traversal source', executeAnalyticsQueries(a0));
@@ -498,11 +498,11 @@ function createTraversal(client, options) {
 
 function validateVertexResult(result, expectedResult, vertexLabel, propertyName) {
   assert.strictEqual(result.length, 1);
-  var vertex = result[0];
+  const vertex = result[0];
   assert.strictEqual(vertex.label, vertexLabel);
-  var prop = vertex.properties[propertyName][0];
+  const prop = vertex.properties[propertyName][0];
   helper.assertInstanceOf(prop, dse.graph.VertexProperty);
-  var propValue = prop.value;
+  const propValue = prop.value;
   if (typeof expectedResult === 'object') {
     helper.assertInstanceOf(propValue, expectedResult.constructor);
   }
