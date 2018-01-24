@@ -1,2 +1,2 @@
 DataStax Enterprise Node.js Driver Extensions for DSE Graph
-Copyright 2016-2018 DataStax, Inc.
+Copyright DataStax, Inc.

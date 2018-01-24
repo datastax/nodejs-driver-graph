@@ -30,8 +30,9 @@
   },
   "license": "SEE LICENSE IN http://www.datastax.com/terms/datastax-dse-driver-license-terms",
   "scripts":  {
-    "test": "./node_modules/.bin/mocha test/unit -R spec -t 5000",
-    "ci": "./node_modules/.bin/mocha test/unit test/integration -R mocha-jenkins-reporter"
+    "test": "mocha test/unit -R spec -t 5000",
+    "ci": "mocha test/unit test/integration -R mocha-jenkins-reporter",
+    "eslint": "eslint lib test"
   },
   "engines": {
     "node" : ">=6"

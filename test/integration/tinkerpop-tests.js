@@ -1,10 +1,11 @@
 /**
- * Copyright (C) 2016 DataStax, Inc.
+ * Copyright DataStax, Inc.
  *
  * Please see the license for details:
  * http://www.datastax.com/terms/datastax-dse-driver-license-terms
  */
 'use strict';
+
 var util = require('util');
 var assert = require('assert');
 var dse = require('dse-driver');
