@@ -162,20 +162,21 @@ vdescribe('5.0', 'DseGraph', function () {
 
 function testTraversal(t, expected) {
   return (function testTraversalFn(done) {
-    t.toList(function (err, returnValue) {
-      setImmediate(function () {
-        assert.ifError(err);
-        if (Array.isArray(expected)) {
-          const sExpected = expected.slice().sort();
-          const sReturn = returnValue.slice().sort();
-          assert.deepEqual(sReturn, sExpected);
-        }
-        else {
-          assert.strictEqual(returnValue, expected);
-        }
-        done();
-      });
-    });
+    t.toList()
+      .then(returnValue => {
+        setImmediate(() => {
+          if (Array.isArray(expected)) {
+            const sExpected = expected.slice().sort();
+            const sReturn = returnValue.slice().sort();
+            assert.deepEqual(sReturn, sExpected);
+          }
+          else {
+            assert.strictEqual(returnValue, expected);
+          }
+          done();
+        });
+      })
+      .catch(done);
   });
 }
 
