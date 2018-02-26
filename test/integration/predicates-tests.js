@@ -13,15 +13,17 @@ const Client = dse.Client;
 const geometry = dse.geometry;
 const Point = geometry.Point;
 const Polygon = geometry.Polygon;
+const LineString = geometry.LineString;
 const helper = require('../helper');
 const vit = helper.vit;
 const vdescribe = helper.vdescribe;
 const predicates = dseGraph.predicates;
 const tinkerpop = require('gremlin-javascript');
 const __ = tinkerpop.process.statics;
+const P = tinkerpop.process.P;
 
 vdescribe('5.0', 'DseGraph', function () {
-  this.timeout(60000);
+  this.timeout(120000);
   before(helper.ccm.startAllTask(1, {workloads: ['graph', 'solr']}));
   after(helper.ccm.remove.bind(helper.ccm));
   describe('predicates', function () {
@@ -34,11 +36,15 @@ vdescribe('5.0', 'DseGraph', function () {
           'system.graph(name).ifNotExists().create()', { name: addressBookGraphName }, { graphName: null }),
         helper.toTask(client.executeGraph, client,
           helper.queries.graph.getAddressBookSchema(helper.getDseVersion()), null, { graphName: addressBookGraphName }),
+        helper.toTask(client.executeGraph, client,
+          helper.queries.graph.modernSchema, null, { graphName: addressBookGraphName }),
         function (next) {
           helper.eachSeries(helper.queries.graph.addressBookGraph, function (q, eachNext) {
             client.executeGraph(q, null, { graphName: addressBookGraphName }, eachNext);
           }, next);
         },
+        helper.toTask(client.executeGraph, client,
+          helper.queries.graph.modernGraph, null, { graphName: addressBookGraphName }),
         function (next) {
           helper.trace('Reindexing address_book.user_p');
           helper.ccm.exec(['node1', 'dsetool', 'reload_core', 'address_book.user_p', 'reindex=true'], next);
@@ -49,6 +55,74 @@ vdescribe('5.0', 'DseGraph', function () {
     const g = dseGraph.traversalSource(client, { graphName: addressBookGraphName });
     before(client.connect.bind(client));
     after(client.shutdown.bind(client));
+    describe('using P', function () {
+      it('should match using P.eq()',
+        // Should match 'Paul Thomas Joe' since alias is 'mario'
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.eq(29)).values('name'),
+          ['marko']
+        ));
+      it('should match using P.neq()',
+        // Should match 'Paul Thomas Joe' since alias is 'mario'
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.neq(29)).values('name'),
+          ['josh', 'vadas', 'peter']
+        ));
+      it('should match using P.gt()',
+        // Should match 'josh' and 'peter' since ages are greater than 29
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.gt(29)).values('name'),
+          ['josh', 'peter']
+        ));
+      it('should match using P.gte()',
+        // Should match 'marko', 'josh' and 'peter since ages are greater or equal than 29
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.gte(29)).values('name'),
+          ['marko', 'josh', 'peter']
+        ));
+      it('should match using P.lt()',
+        // Should match 'vadas' since ages are less than 29
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.lt(29)).values('name'),
+          ['vadas']
+        ));
+      it('should match using P.lte()',
+        // Should match 'marko', and 'vadas' since ages are less or equal than 29
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.lte(29)).values('name'),
+          ['marko', 'vadas']
+        ));
+      it('should match using P.between()',
+        // Should match 'josh' since age is between 30 and 34
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.between(30, 34)).values('name'),
+          ['josh']
+        ));
+      it('should match using P.inside()',
+        // Should match 'josh' since age is inside range 30 and 34
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.inside(30, 34)).values('name'),
+          ['josh']
+        ));
+      it('should match using P.outside()',
+        // Should match 'josh' since age is outside range 30 and 34
+        testTraversal(
+          g.V().hasLabel("person").has("age", P.outside(29, 35)).values('name'),
+          ['vadas']
+        ));
+      it('should match using P.within()',
+        // Should match 'josh' and 'marko' since names are within list
+        testTraversal(
+          g.V().hasLabel("person").has("name", P.within('josh', 'marko', 'george')).values('name'),
+          ['josh', 'marko']
+        ));
+      it('should match using P.without()',
+        // Should match 'josh' and 'marko' since names are not on list
+        testTraversal(
+          g.V().hasLabel("person").has("name", P.without('vadas', 'peter', 'george')).values('name'),
+          ['josh', 'marko']
+        ));
+    });
     describe('search', function () {
       describe('using text index', function () {
         it('should search by token()',
@@ -107,6 +181,12 @@ vdescribe('5.0', 'DseGraph', function () {
             g.V().has('user', 'alias', search.fuzzy('mario', 1)).values('full_name'),
             [ 'Paul Thomas Joe', 'George Bill Steve' ]
           ));
+        vit('5.1', 'should search by fuzzy() #norecords',
+          // Should match no records
+          testTraversal(
+            g.V().has('user', 'alias', search.fuzzy('marlo', 0)).values('full_name'),
+            []
+          ));
       });
     });
     describe('geo', function () {
@@ -138,6 +218,13 @@ vdescribe('5.0', 'DseGraph', function () {
               g.V().has('user', 'coordinates', geo.inside(new Point(-93.60, 41.60), 400, geo.unit.kilometers)).values('full_name'),
               [ 'Paul Thomas Joe', 'George Bill Steve' ]
             ));
+          it('with kilometers#all places',
+            // Should only be two people within 400 KM of Des Moines, IA (-93.60, 41.60) (Rochester, Minneapolis)
+            // Chicago is too far away (~500 KM)
+            testTraversal(
+              g.V().has('user', 'coordinates', geo.inside(new Point(-93.60, 41.60), 40075, geo.unit.kilometers)).values('full_name'),
+              [ 'George Bill Steve', 'James Paul Joe', 'Jill Alice', 'Paul Thomas Joe' ]
+            ));
           it('with meters',
             // Should only be on person within 350,000 M of Des Moines, IA (-93.60, 41.60) (Rochester)
             testTraversal(
@@ -155,6 +242,12 @@ vdescribe('5.0', 'DseGraph', function () {
               .values('full_name'),
             [ 'Paul Thomas Joe', 'James Paul Joe' ]
           ));
+        it('should throw TypeError when search inside LineString', function() {
+          // Search is only possible for points with distance or polygon.
+          assert.throws(() => {
+            g.V().has('user', 'coordinates', geo.inside(new LineString(new Point(10.99, 20.02), new Point(14, 26)))).values('full_name');
+            }, TypeError)
+        });
       });
     });
   });

@@ -16,5 +16,6 @@ build:
       export CCM_PATH=$HOME/ccm
       export JUNIT_REPORT_STACK=1
       export JUNIT_REPORT_PATH=.
+      export TEST_TRACE="on"
       npm run-script ci || true
   - xunit: "*.xml"

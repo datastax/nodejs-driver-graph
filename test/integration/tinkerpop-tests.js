@@ -87,6 +87,12 @@ vdescribe('5.0', 'DseGraph', function () {
       });
     });
 
+    it('should throw TypeError to execute invalid traversal method', function () {
+      assert.throws(() => {
+        g.toList()
+      }, TypeError);
+    });
+
     it('should use vertex id as parameter', function () {
       // given an existing vertex
       return g.V().hasLabel("person").has("name", "marko").toList()
@@ -119,10 +125,21 @@ vdescribe('5.0', 'DseGraph', function () {
       // Provide a predicate 'P.eq(0.2)' to ensure it is properly converted to graphson.
       // This module has a special case serializer for Predicates as DSE defines some
       // custom predicates for search and geo.
-      return g.E().has("weight", P.eq(0.2)).outV().valueMap('name').toList().then(list => {
-        const peter = getFirst(list);
-        assert.strictEqual(peter.name[0], 'peter');
-      });
+      return g.E().has("weight", P.eq(0.2)).outV().valueMap('name').toList()
+        .then(list => {
+          const peter = getFirst(list);
+          assert.strictEqual(peter.name[0], 'peter');
+          //testing max and min values
+          return g.E().has("weight", P.lt(-9007199254740991)).outV().valueMap('name').toList();
+        })
+        .then(result => {
+          assert.strictEqual(result.length, 0);
+          //testing max and min values
+          return g.E().has("weight", P.gt(9007199254740991)).outV().valueMap('name').toList();
+        })
+        .then(result => {
+          assert.strictEqual(result.length, 0);
+        });
     });
 
     it('should deserialize vertex id as map', function () {
@@ -169,6 +186,7 @@ vdescribe('5.0', 'DseGraph', function () {
           });
         });
     });
+
     it('should retrieve path with labels', function () {
       // find all path traversals for a person whom Marko knows that has created software and what
       // that software is.
@@ -329,8 +347,7 @@ vdescribe('5.0', 'DseGraph', function () {
     if (is51) {
       values.push.apply(values, [
         ['Date()', [ new types.LocalDate(2017, 2, 3), new types.LocalDate(-5, 2, 8) ]],
-        //TODO: Wait for DSP-12318 to be resolved
-        //['Time()', [ types.LocalTime.fromString('4:53:03.000000021') ]]
+        ['Time()', [ types.LocalTime.fromString('4:53:03.000000021') ]]
       ]);
     }
 
