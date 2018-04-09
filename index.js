@@ -6,9 +6,9 @@
  */
 'use strict';
 
-var glv = require('gremlin-javascript');
-var DseRemoteConnection = require('./lib/dse-remote-connection');
-var dse = require('dse-driver');
+const glv = require('gremlin');
+const DseRemoteConnection = require('./lib/dse-remote-connection');
+const dse = require('dse-driver');
 
 /**
  * Returns the version of the package
@@ -72,8 +72,8 @@ exports.queryFromTraversal = function queryFromTraversal(traversal) {
  * @returns {GraphTraversalSource} Returns an Apache TinkerPop GraphTraversalSource.
  */
 exports.traversalSource = function traversalSource(client, options) {
-  var traversalStrategies = new glv.process.TraversalStrategies();
-  var remoteConnection = new DseRemoteConnection(client, options);
+  const traversalStrategies = new glv.process.TraversalStrategies();
+  const remoteConnection = new DseRemoteConnection(client, options);
   traversalStrategies.addStrategy(new glv.driver.RemoteStrategy(remoteConnection));
   return new glv.process.GraphTraversalSource(null, traversalStrategies);
 };
@@ -83,15 +83,15 @@ exports.traversalSource = function traversalSource(client, options) {
  * @private
  */
 function extend(target) {
-  var sources = Array.prototype.slice.call(arguments, 1);
+  const sources = Array.prototype.slice.call(arguments, 1);
   sources.forEach(function (source) {
     if (!source) {
       return;
     }
-    var keys = Object.keys(source);
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var value = source[key];
+    const keys = Object.keys(source);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = source[key];
       if (value === undefined) {
         continue;
       }

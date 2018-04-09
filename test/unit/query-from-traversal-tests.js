@@ -16,7 +16,7 @@ const types = dse.types;
 const geometry = dse.geometry;
 const Point = geometry.Point;
 const Polygon = geometry.Polygon;
-const tinkerpop = require('gremlin-javascript');
+const tinkerpop = require('gremlin');
 const __ = tinkerpop.process.statics;
 
 describe('dseGraph', function () {

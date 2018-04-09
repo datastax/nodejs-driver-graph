@@ -18,7 +18,7 @@ const helper = require('../helper');
 const vit = helper.vit;
 const vdescribe = helper.vdescribe;
 const predicates = dseGraph.predicates;
-const tinkerpop = require('gremlin-javascript');
+const tinkerpop = require('gremlin');
 const __ = tinkerpop.process.statics;
 const P = tinkerpop.process.P;
 
