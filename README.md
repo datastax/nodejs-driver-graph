@@ -17,43 +17,55 @@ npm install dse-graph
 - [Getting started][getting-started]
 - [Documentation index][doc-index]
 - [API docs][api-docs]
-
+- [Gremlin Reference][gremlin]
+- [Gremlin-JavaScript Reference][gremlin-js-doc]
 
 ## Getting Help
 
 You can use the [project mailing list][mailing-list] or create a ticket on the [Jira issue tracker][jira]. 
 
-## Getting Started
+## Basic Usage
 
 Create a `dse.Client` instance and use it to obtain traversal sources: 
 
 ```javascript
 const dse = require('dse-driver');
 const dseGraph = require('dse-graph');
-const client = new dse.Client({ contactPoints: ['h1', 'h2'] });
-const g = dseGraph.traversalSource(client);
-// print john's friends names
-g.V().has('name','john').out('friends').values('name').toList((err, names) => {
-  names.forEach(console.log);
+
+const client = new dse.Client({
+  contactPoints: ['host1', 'host2'],
+  graphOptions:  { name: 'my_graph' }
 });
+
+// Obtain a traversal source, used to create traversals
+const g = dseGraph.traversalSource(client);
+
+// Use the traversal source to create traversals
+// ie: Print john's friends names
+g.V().has('name','john').out('friends').values('name').toList()
+  .then(names => names.forEach(console.log));
 ```
 
 You should reuse the `Client` instance across your application.
+
+Read the full [Getting Started Guide][getting-started].
 
 ## License
 
 Copyright 2016-2018 DataStax
 
-http://www.datastax.com/terms/datastax-dse-driver-license-terms
+https://www.datastax.com/terms/datastax-dse-driver-license-terms
 
 ---
 
-_Apache TinkerPop, TinkerPop, Apache are registered trademarks of The Apache Software Foundation_
+*Apache TinkerPop, TinkerPop, Apache are registered trademarks of The Apache Software Foundation.*
 
-[dse]: http://www.datastax.com/products/datastax-enterprise
-[dse-driver]: https://github.com/datastax/nodejs-driver-dse
+[dse]: https://www.datastax.com/products/datastax-enterprise
+[dse-driver]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/
 [jira]: https://datastax-oss.atlassian.net/projects/NODEJS/issues
 [mailing-list]: https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user
-[doc-index]: http://docs.datastax.com/en/developer/nodejs-dse-graph/latest/
-[api-docs]: http://docs.datastax.com/en/developer/nodejs-dse-graph/latest/api2/
-[getting-started]: http://docs.datastax.com/en/developer/nodejs-dse-graph/latest/getting-started/
+[doc-index]: https://docs.datastax.com/en/developer/nodejs-dse-graph/latest/
+[api-docs]: https://docs.datastax.com/en/developer/nodejs-dse-graph/latest/api2/
+[getting-started]: https://docs.datastax.com/en/developer/nodejs-dse-graph/latest/getting-started/
+[gremlin]: https://tinkerpop.apache.org/docs/3.2.8/reference/#graph-traversal-steps
+[gremlin-js-doc]: https://tinkerpop.apache.org/docs/3.2.8/reference/#gremlin-javascript

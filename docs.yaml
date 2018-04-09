@@ -11,8 +11,6 @@ sections:
     type:     jsdoc
     config:   doc/jsdoc.json
 links:
-  - title: Code
-    href:  https://github.com/datastax/nodejs-dse-graph/
   - title: Issues
     href:  https://datastax-oss.atlassian.net/projects/NODEJS/issues
   - title: Mailing List

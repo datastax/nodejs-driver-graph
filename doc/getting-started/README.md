@@ -5,23 +5,24 @@
 The DSE Graph extension takes advantage of [execution profiles][ep] to allow different configurations for the various
 query handlers.
 
-You can set the default execution profile to set the [graph name and any graph option][ep-api] and use it like in the
-following example:
+You can specify the default execution profile to set the [graph name and any graph option][ep-api] and use it like in
+ the following example:
 
 ```javascript
 const dse = require('dse-driver');
 const dseGraph = require('dse-graph');
+
 const client = new dse.Client({
-  contactPoints: ['h1', 'h2'],
+  contactPoints: ['host1', 'host2'],
   profiles: [
     new dse.ExecutionProfile('default', { graphOptions:  { name: 'my_graph' } })
   ]
 });
+
 const g = dseGraph.traversalSource(client);
 // Print the names of john's friends
-g.V().has('name','john').out('friends').values('name').toList((err, names) => {
-  names.forEach(console.log);
-});
+g.V().has('name','john').out('friends').values('name').toList()
+  .then(names => names.forEach(console.log));
 ```
 
 If you have multiple execution profiles, you can also specify it when obtaining the `TraversalSource` instance:
@@ -51,7 +52,7 @@ using `createExecutionProfile()` method.
 
 ```javascript
 const client = new dse.Client({
-  contactPoints: ['h1', 'h2'],
+  contactPoints: ['host1', 'host2'],
   profiles: [
     dseGraph.createExecutionProfile('explicit-exec-graph1')
   ]
@@ -60,15 +61,16 @@ const client = new dse.Client({
 
 ```javascript
 const g = dseGraph.traversalSource(client);
+
 const query = dseGraph.queryFromTraversal(g.V().hasLabel('person'));
 // Reference the execution profile previously created.
-client.executeGraph(query, null, { executionProfile: 'explicit-exec-graph1' }, function(err, result) {
-  assert.ifError(err);  
-  result.forEach(function (vertex) {
-    console.log(vertex.label); // person
-    console.log(vertex instanceof dse.Graph.Vertex); // true
+client.executeGraph(query, null, { executionProfile: 'explicit-exec-graph1' })
+  .then(result => {
+    for (const vertex of result) {
+      console.log(vertex.label); // person
+      console.log(vertex instanceof dse.Graph.Vertex); // true
+    }
   });
-});
 ```
 
 ## Putting it all together
@@ -77,29 +79,28 @@ client.executeGraph(query, null, { executionProfile: 'explicit-exec-graph1' }, f
 const dse = require('dse-driver');
 const dseGraph = require('dse-graph');
 const client = new dse.Client({
-  contactPoints: ['h1', 'h2'],
+  contactPoints: ['host1', 'host2'],
   profiles: [
     new dse.ExecutionProfile('default', { graphOptions:  { name: 'my_graph' } }),
     dseGraph.createExecutionProfile('explicit-exec', { graphOptions:  { name: 'my_graph' } } )
   ]
 });
+
 // Obtain a traversal source
 const g = dseGraph.traversalSource(client);
+
 // Execute queries using the Traversal toList() method
-g.V().has('name','john').out('friends').values('name').toList(function (err, names) {
-  names.forEach(console.log);
-});
+g.V().hasLabel('person').values('age').toList()
+  .then(ages => ages.forEach(console.log));
 
 // Alternatively you can convert a given traversal to a string query and use 
 // the DSE Driver executeGraph() method
-const query = dseGraph.queryFromTraversal(g.V().hasLabel('person'));
+const query = dseGraph.queryFromTraversal(g.V().hasLabel('person').values('age'));
 // Reference the execution profile previously created.
-client.executeGraph(query, null, { executionProfile: 'explicit-exec' }, function(err, result) {
-  assert.ifError(err);  
-  result.forEach(console.log);
-});
+client.executeGraph(query, null, { executionProfile: 'explicit-exec' })
+  .then(result => console.log(result.toArray()));
 ```
 
-[dse-driver]: https://github.com/datastax/nodejs-driver-dse
-[ep]: http://docs.datastax.com/en/developer/nodejs-driver-dse/latest/features/execution-profiles/
-[ep-api]: http://docs.datastax.com/en/drivers/nodejs-dse/latest/ExecutionProfile.html
+[dse-driver]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/
+[ep]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/features/execution-profiles/
+[ep-api]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/api/class.ExecutionProfile/
