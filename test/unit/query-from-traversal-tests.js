@@ -45,7 +45,7 @@ describe('dseGraph', function () {
         [ g.V().has('user', 'coordinates', geo.inside(new Point(-91.2, 43.8), 10))
           .local(__.has('coordinates', geo.inside(new Polygon([new Point(-82, 40), new Point(-92.5, 45), new Point(-95, 38), new Point(-82, 40)]))))
           .values('full_name'),
-        '{"@type":"g:Bytecode","@value":{"step":[["V"],["has","user","coordinates",{"@value":{"predicate":"inside","predicateType":"Geo","value":{"@type":"dse:Distance","@value":"DISTANCE((-91.2 43.8) 10)"}},"@type":"dse:P"}],["local",{"@type":"g:Bytecode","@value":{"step":[["has","coordinates",{"@value":{"predicate":"inside","predicateType":"Geo","value":{"@type":"dse:Polygon","@value":"POLYGON ((-82 40, -92.5 45, -95 38, -82 40))"}},"@type":"dse:P"}]]}}],["values","full_name"]]}}']
+        '{"@type":"g:Bytecode","@value":{"step":[["V"],["has","user","coordinates",{"@value":{"predicate":"inside","predicateType":"Geo","value":{"@type":"dse:Distance","@value":"DISTANCE((-91.2 43.8) 10)"}},"@type":"dse:P"}],["local",{"@type":"g:Bytecode","@value":{"step":[["has","coordinates",{"@value":{"predicate":"insideCartesian","predicateType":"Geo","value":{"@type":"dse:Polygon","@value":"POLYGON ((-82 40, -92.5 45, -95 38, -82 40))"}},"@type":"dse:P"}]]}}],["values","full_name"]]}}']
       ].forEach(function (item) {
         assert.strictEqual(dseGraph.queryFromTraversal(item[0]), item[1]);
       });

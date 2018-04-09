@@ -232,7 +232,7 @@ vdescribe('5.0', 'DseGraph', function () {
               [ 'Paul Thomas Joe' ]
             ));
         });
-        it('should search by polygon area',
+        vit('5.1', 'should search by polygon area',
           // 10 degrees within La Crosse, WI should include Chicago, Rochester and Minneapolis.  This is needed to filter
           // down the traversal set as using the search index Geo.inside(polygon) is not supported for search indices.
           // Filter further by an area that only Chicago and Rochester fit in. (Minneapolis is too far west).
@@ -246,7 +246,7 @@ vdescribe('5.0', 'DseGraph', function () {
           // Search is only possible for points with distance or polygon.
           assert.throws(() => {
             g.V().has('user', 'coordinates', geo.inside(new LineString(new Point(10.99, 20.02), new Point(14, 26)))).values('full_name');
-            }, TypeError)
+          }, TypeError);
         });
       });
     });
