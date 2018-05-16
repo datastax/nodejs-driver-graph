@@ -2,7 +2,7 @@ nodejs:
   - "6"
   - "8"
 os:
-  - ubuntu/trusty64
+  - ubuntu/bionic64/nodejs-driver
 cassandra:
   - dse-5.0
   - dse-5.1
