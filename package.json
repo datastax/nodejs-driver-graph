@@ -16,8 +16,8 @@
     "tinkerpop"
   ],
   "dependencies": {
-    "dse-driver": "^1.5.1",
-    "gremlin": "3.2.8"
+    "dse-driver": "^1.6.0",
+    "gremlin": "3.2.9"
   },
   "devDependencies": {
     "mocha": "^5.0.0",
