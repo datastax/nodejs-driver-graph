@@ -21,7 +21,7 @@ exports.version = require('./package.json').version;
  * <code>queryFromTraversal()</code>.
  * @param {String} name Name of the execution profile.
  * @param {Object} options The options as defined in the
- * [DSE Driver]{@link http://docs.datastax.com/en/drivers/nodejs-dse/latest/ExecutionProfile.html}.
+ * [DSE Driver]{@link https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/api/class.ExecutionProfile/}.
  * @example
  * const dse = require('dse-driver');
  * const dseGraph = require('dse-graph');
