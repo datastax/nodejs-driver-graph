@@ -331,6 +331,20 @@ const helper = {
       });
     });
   },
+  wrapClientPromise: function (handler, options) {
+    return (function wrappedTestCase() {
+      const opts = helper.getOptions(helper.extend(options || {}, {
+        graphOptions : { name: 'name1' },
+        profiles: [
+          dseGraph.createExecutionProfile('traversal', {})
+        ]
+      }));
+      const client = new Client(opts);
+      return client.connect()
+        .then(() => handler(client))
+        .then(() => client.shutdown());
+    });
+  },
   ccm: {},
   ads: {}
 };

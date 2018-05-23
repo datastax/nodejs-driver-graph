@@ -23,7 +23,7 @@ const __ = tinkerpop.process.statics;
 const P = tinkerpop.process.P;
 
 vdescribe('5.0', 'DseGraph', function () {
-  this.timeout(120000);
+  this.timeout(240000);
   before(helper.ccm.startAllTask(1, {workloads: ['graph', 'solr']}));
   after(helper.ccm.remove.bind(helper.ccm));
   describe('predicates', function () {

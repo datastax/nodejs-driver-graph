@@ -6,6 +6,10 @@ sections:
     prefix:   /getting-started
     type:     markdown
     files:    'doc/getting-started/**/*.md'
+  - title:    Batch Support
+    prefix:   /batch
+    type:     markdown
+    files:    'doc/batch/**/*.md'
   - title:    Changelog
     prefix:   /changelog
     type:     markdown

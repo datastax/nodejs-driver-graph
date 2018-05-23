@@ -26,9 +26,11 @@ const P = tinkerpop.process.P;
 const __ = tinkerpop.process.statics;
 const wrapTraversal = helper.wrapTraversal;
 const wrapClient = helper.wrapClient;
+const wrapClientPromise = helper.wrapClientPromise;
 
 vdescribe('5.0', 'DseGraph', function () {
-  this.timeout(60000);
+  this.timeout(240000);
+
   before(helper.ccm.startAllTask(1, { workloads: ['graph','spark'] }));
   before(helper.createModernGraph('name1'));
   before(wrapClient(function (client, done) {
@@ -36,6 +38,7 @@ vdescribe('5.0', 'DseGraph', function () {
     client.executeGraph("schema.config().option('graph.schema_mode').set('development')", done);
   }));
   after(helper.ccm.remove.bind(helper.ccm));
+
   describe('Client#executeGraph()', function () {
     it('should execute a GraphSON query', wrapClient(function (client, done) {
       const queries = [
@@ -51,6 +54,7 @@ vdescribe('5.0', 'DseGraph', function () {
       }, done);
     }));
   });
+
   describe('queryFromTraversal()', function() {
     it('should produce a query string usable with DseClient#executeGraph()', wrapClient(function (client, done) {
       const g = dseGraph.traversalSource();
@@ -69,6 +73,7 @@ vdescribe('5.0', 'DseGraph', function () {
       });
     }));
   });
+
   describe('traversalSource()', function () {
     let schemaCounter = 0;
     const client = new Client(helper.getOptions({ graphOptions : { name: 'name1' } }));
@@ -88,9 +93,7 @@ vdescribe('5.0', 'DseGraph', function () {
     });
 
     it('should throw TypeError to execute invalid traversal method', function () {
-      assert.throws(() => {
-        g.toList()
-      }, TypeError);
+      assert.throws(() => g.toList(), TypeError);
     });
 
     it('should use vertex id as parameter', function () {
@@ -448,6 +451,24 @@ vdescribe('5.0', 'DseGraph', function () {
       // should fail since graph computer required.
       it('should make fail to make an OLAP query when using \'g\' traversal source', executeAnalyticsQueries(g, false));
     });
+  });
+
+  vdescribe('6.0', 'queryFromBatch()', function () {
+    it('should produce a query string usable with DseClient#executeGraph()', wrapClientPromise(function (client) {
+      const g = dseGraph.traversalSource(client);
+
+      const batch = [
+        g.addV('person').property('name', 'Matt').property('age', 12),
+        g.addV('person').property('name', 'Olivia').property('age', 8),
+        g.V().has('person', 'name', 'Matt').addE("knows").to(__.V().has('name', 'Olivia'))
+      ];
+
+      const query = dseGraph.queryFromBatch(batch);
+
+      return client.executeGraph(query, null, { executionProfile: 'traversal' })
+        .then(() => g.V().has('person', 'name', 'Matt').out('knows').values('name').next())
+        .then(({ value }) => assert.strictEqual(value, 'Olivia'));
+    }));
   });
 });
 
