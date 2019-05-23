@@ -52,9 +52,9 @@ Read the full [Getting Started Guide][getting-started].
 
 ## License
 
-Copyright 2016-2018 DataStax
+© DataStax, Inc.
 
-https://www.datastax.com/terms/datastax-dse-driver-license-terms
+The full license terms are available at https://www.datastax.com/terms/datastax-dse-driver-license-terms
 
 ---
 
