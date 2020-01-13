@@ -38,11 +38,12 @@ exports.version = require('./package.json').version;
  * // Use a single Client instance
  * // Create the execution profile once using this method
  * const client = new Client({
-   *   contactPoints: ['h1', 'h2'],
-   *   profiles: [
-   *     dseGraph.createExecutionProfile('graph-oltp-traversal')
-   *   ]
-   * });
+ *   contactPoints: ['h1', 'h2'],
+ *   localDataCenter: 'my_graph_dc',
+ *   profiles: [
+ *     dseGraph.createExecutionProfile('graph-oltp-traversal')
+ *   ]
+ * });
  * // Obtain a new traversal source.
  * const g = dseGraph.traversalSource(client);
  * const query = dseGraph.queryFromTraversal(g.V().hasLabel('person'));

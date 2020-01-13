@@ -31,6 +31,7 @@ const dseGraph = require('cassandra-driver-graph');
 
 const client = new Client({
   contactPoints: ['host1', 'host2'],
+  localDataCenter: 'my_graph_dc',
   graphOptions:  { name: 'my_graph' }
 });
 
