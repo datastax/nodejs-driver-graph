@@ -4,13 +4,14 @@
  * Please see the license for details:
  * http://www.datastax.com/terms/datastax-dse-driver-license-terms
  */
+
 'use strict';
 
 const util = require('util');
 const path = require('path');
 const assert = require('assert');
 const spawn = require('child_process').spawn;
-const Client = require('dse-driver').Client;
+const { Client } = require('cassandra-driver');
 const dseGraph = require('../');
 
 function noop () {}
@@ -19,7 +20,7 @@ const helper = {
   getDseVersion: function() {
     let version = process.env['TEST_DSE_VERSION'];
     if (!version) {
-      version = '5.0.3';
+      version = '6.0.10';
     }
     return version;
   },
@@ -179,7 +180,8 @@ const helper = {
     executeIfVersion(testVersion, describe, [title, func]);
   },
   baseOptions: {
-    contactPoints: ['127.0.0.1']
+    contactPoints: ['127.0.0.1'],
+    localDataCenter: 'dc1'
   },
   /**
    * @returns {Function} A function with a single callback param, applying the fn with parameters
@@ -385,7 +387,9 @@ helper.ccm.startAll = function (nodeLength, options, callback) {
       self.exec(create, helper.wait(options.sleep, next));
     },
     function (next) {
-      const populate = ['populate', '-n', nodeLength.toString()];
+      // adapt to multi dc format so data center naming is consistent.
+      const nodeLengthText = typeof nodeLength === 'number' ? `${nodeLength}:0` : nodeLength;
+      const populate = ['populate', '-n', nodeLengthText];
       if (options.vnodes) {
         populate.push('--vnodes');
       }

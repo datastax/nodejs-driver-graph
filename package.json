@@ -1,7 +1,7 @@
 {
-  "name": "dse-graph",
-  "version": "1.1.0",
-  "description": "DataStax Enterprise Node.js Driver Extensions for DSE Graph",
+  "name": "cassandra-driver-graph",
+  "version": "2.0.0-alpha.1",
+  "description": "DataStax Node.js Graph Extension",
   "author": "DataStax",
   "keywords": [
     "connection",
@@ -16,25 +16,27 @@
     "tinkerpop"
   ],
   "dependencies": {
-    "dse-driver": "^1.6.0",
+    "cassandra-driver": "https://repo.sjc.dsinternal.org/artifactory/local-repos/nodejs-driver/cassandra-driver-4.4.0-alpha.1-7fbe9aa4.tgz",
     "gremlin": "3.2.9"
   },
   "devDependencies": {
-    "mocha": "^5.0.0",
-    "rewire": "^3.0.2",
-    "mocha-jenkins-reporter": "^0.3.10"
+    "mocha": "~5.2.0",
+    "mocha-jenkins-reporter": "^0.4.2"
   },
-  "homepage": "http://docs.datastax.com/en/developer/nodejs-dse-graph/",
   "bugs": {
     "url": "https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user"
   },
-  "license": "SEE LICENSE IN http://www.datastax.com/terms/datastax-dse-driver-license-terms",
-  "scripts":  {
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datastax/nodejs-driver-graph.git"
+  },
+  "license": "Apache-2.0",
+  "scripts": {
     "test": "mocha test/unit -R spec -t 5000",
-    "ci": "mocha test/unit test/integration -R mocha-jenkins-reporter",
+    "ci": "mocha test/unit test/integration -R mocha-jenkins-reporter --exit",
     "eslint": "eslint lib test"
   },
   "engines": {
-    "node" : ">=6"
-   }
+    "node": ">=8"
+  }
 }

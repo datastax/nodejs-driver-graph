@@ -1,14 +1,13 @@
 nodejs:
-  - "6"
   - "8"
   - "10"
+  - "12"
 os:
   - ubuntu/bionic64/nodejs-driver
 cassandra:
-  - dse-5.0
   - dse-5.1
   - dse-6.0
-
+  - dse-6.7
 build:
   - npm: install
   - script: |

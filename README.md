@@ -1,15 +1,12 @@
-# DataStax Enterprise Node.js Driver Extensions for DSE Graph
+# DataStax Node.js Driver Extensions for DSE Graph
 
-This package builds on the [DataStax Enterprise Node.js driver][dse-driver], adding functionality for interacting with
-DSE graph features and Apache TinkerPop.
-
-DSE Graph Extensions for DataStax Enterprise Node.js Driver can be used solely with [DataStax Enterprise][dse]. Please
-consult [the license](#license).
+This package builds on the [DataStax Node.js Driver for Apache Cassandra][driver], adding functionality for
+interacting with DSE graph features and Apache TinkerPop.
 
 ## Installation
 
 ```bash
-npm install dse-graph
+npm install cassandra-driver-graph
 ```
 
 ## Documentation
@@ -26,13 +23,13 @@ You can use the [project mailing list][mailing-list] or create a ticket on the [
 
 ## Basic Usage
 
-Create a `dse.Client` instance and use it to obtain traversal sources: 
+Create a `Client` instance and use it to obtain traversal sources: 
 
 ```javascript
-const dse = require('dse-driver');
-const dseGraph = require('dse-graph');
+const { Client } = require('cassandra-driver');
+const dseGraph = require('cassandra-driver-graph');
 
-const client = new dse.Client({
+const client = new Client({
   contactPoints: ['host1', 'host2'],
   graphOptions:  { name: 'my_graph' }
 });
@@ -54,18 +51,25 @@ Read the full [Getting Started Guide][getting-started].
 
 © DataStax, Inc.
 
-The full license terms are available at https://www.datastax.com/terms/datastax-dse-driver-license-terms
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
+License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
+for the specific language governing permissions and limitations under the License.
 
 ---
 
 *Apache TinkerPop, TinkerPop, Apache are registered trademarks of The Apache Software Foundation.*
 
 [dse]: https://www.datastax.com/products/datastax-enterprise
-[dse-driver]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/
+[driver]: https://github.com/datastax/nodejs-driver
 [jira]: https://datastax-oss.atlassian.net/projects/NODEJS/issues
 [mailing-list]: https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user
 [doc-index]: https://docs.datastax.com/en/developer/nodejs-dse-graph/latest/
 [api-docs]: https://docs.datastax.com/en/developer/nodejs-dse-graph/latest/api2/
 [getting-started]: https://docs.datastax.com/en/developer/nodejs-dse-graph/latest/getting-started/
-[gremlin]: https://tinkerpop.apache.org/docs/3.2.8/reference/#graph-traversal-steps
-[gremlin-js-doc]: https://tinkerpop.apache.org/docs/3.2.8/reference/#gremlin-javascript
+[gremlin]: https://tinkerpop.apache.org/docs/3.2.9/reference/#graph-traversal-steps
+[gremlin-js-doc]: https://tinkerpop.apache.org/docs/3.2.9/reference/#gremlin-javascript

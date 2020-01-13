@@ -1,14 +1,24 @@
-/**
+/*
  * Copyright DataStax, Inc.
  *
- * Please see the license for details:
- * http://www.datastax.com/terms/datastax-dse-driver-license-terms
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 'use strict';
 
 const glv = require('gremlin');
 const DseRemoteConnection = require('./lib/dse-remote-connection');
-const dse = require('dse-driver');
+const { ExecutionProfile } = require('cassandra-driver');
 
 /**
  * Returns the version of the package
@@ -21,13 +31,13 @@ exports.version = require('./package.json').version;
  * <code>queryFromTraversal()</code> and <code>queryFromBatch()</code>.
  * @param {String} name Name of the execution profile.
  * @param {Object} options The options as defined in the
- * [DSE Driver]{@link https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/api/class.ExecutionProfile/}.
+ * [DataStax Driver]{@link https://docs.datastax.com/en/developer/nodejs-driver/latest/api/class.ExecutionProfile/}.
  * @example
- * const dse = require('dse-driver');
- * const dseGraph = require('dse-graph');
+ * const { Client } = require('cassandra-driver');
+ * const dseGraph = require('cassandra-driver-graph');
  * // Use a single Client instance
  * // Create the execution profile once using this method
- * const client = new dse.Client({
+ * const client = new Client({
    *   contactPoints: ['h1', 'h2'],
    *   profiles: [
    *     dseGraph.createExecutionProfile('graph-oltp-traversal')
@@ -47,7 +57,7 @@ exports.createExecutionProfile = function createExecutionProfile(name, options) 
   options = extend({}, options);
   // Use 'bytecode-json' by default
   options.graphOptions = extend({ language: 'bytecode-json' }, options.graphOptions);
-  return new dse.ExecutionProfile(name, options);
+  return new ExecutionProfile(name, options);
 };
 
 exports.predicates = require('./lib/predicates');
@@ -77,9 +87,9 @@ exports.queryFromBatch = function queryFromBatch(batch) {
  * Creates a new graph traversal source.
  * If no arguments are provided, a simple and non-iterable traversal source is used.  This can be used to
  * generate queries using {@link queryFromTraversal()}.
- * Alternatively, providing a <code>dse.Client</code> and optionally <code>GraphQueryOptions</code> creates an iterable
+ * Alternatively, providing a <code>Client</code> and optionally <code>GraphQueryOptions</code> creates an iterable
  * traversal source that works with a remote DSE graph instance.
- * @param {Client} client The <code>dse.Client</code> instance.
+ * @param {Client} client The <code>Client</code> instance.
  * @param {GraphQueryOptions} [options] The graph query options.
  * @returns {GraphTraversalSource} Returns an Apache TinkerPop GraphTraversalSource.
  */

@@ -1,22 +1,32 @@
-/**
+/*
  * Copyright DataStax, Inc.
  *
- * Please see the license for details:
- * http://www.datastax.com/terms/datastax-dse-driver-license-terms
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 'use strict';
 
 const util = require('util');
 const assert = require('assert');
-const dse = require('dse-driver');
-const Client = dse.Client;
+const cassandra = require('cassandra-driver');
+const Client = cassandra.Client;
 const helper = require('../helper');
 const vdescribe = helper.vdescribe;
-const types = dse.types;
+const types = cassandra.types;
 const InetAddress = types.InetAddress;
 const Uuid = types.Uuid;
 const Long = types.Long;
-const geometry = dse.geometry;
+const geometry = cassandra.geometry;
 const Point = geometry.Point;
 const LineString = geometry.LineString;
 const Polygon = geometry.Polygon;
@@ -299,7 +309,7 @@ vdescribe('5.0', 'DseGraph', function () {
           const v = getFirst(list);
           // then the created vertex should have the meta prop present with its sub properties.
           const meta_prop = v.properties['meta_prop'][0];
-          helper.assertInstanceOf(meta_prop, dse.graph.VertexProperty);
+          helper.assertInstanceOf(meta_prop, cassandra.datastax.graph.VertexProperty);
           assert.strictEqual(meta_prop.label, 'meta_prop');
           assert.strictEqual(meta_prop.key, 'meta_prop');
           assert.strictEqual(meta_prop.value, 'hello');
@@ -382,7 +392,7 @@ vdescribe('5.0', 'DseGraph', function () {
         return g.V().hasLabel('person').toList().then(people => {
           helper.assertInstanceOf(people, Array);
           people.forEach(function eachPerson(v) {
-            helper.assertInstanceOf(v, dse.graph.Vertex);
+            helper.assertInstanceOf(v, cassandra.datastax.graph.Vertex);
             assert.ok(v.properties['name'][0].value);
           });
         });
@@ -486,7 +496,7 @@ function validateVertexResult(result, expectedResult, vertexLabel, propertyName)
   const vertex = result[0];
   assert.strictEqual(vertex.label, vertexLabel);
   const prop = vertex.properties[propertyName][0];
-  helper.assertInstanceOf(prop, dse.graph.VertexProperty);
+  helper.assertInstanceOf(prop, cassandra.datastax.graph.VertexProperty);
   const propValue = prop.value;
   if (typeof expectedResult === 'object') {
     helper.assertInstanceOf(propValue, expectedResult.constructor);

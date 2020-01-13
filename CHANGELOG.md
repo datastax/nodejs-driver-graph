@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+
+2020-01-15
+
+- Use DataStax Driver for Apache Cassandra instead of DSE Driver.
+- Rename package to `cassandra-driver-graph`
+
 ## 1.1.0
 
 2018-05-24

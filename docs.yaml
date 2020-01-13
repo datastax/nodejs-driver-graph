@@ -1,5 +1,5 @@
-title: DataStax Enterprise Node.js Driver Extensions for DSE Graph
-summary: DataStax Enterprise Node.js Driver Extensions for DSE Graph
+title: DataStax Node.js Driver Extensions for DSE Graph
+summary: DataStax Node.js Driver Extensions for DSE Graph
 theme:    datastax
 sections:
   - title:    Getting Started
@@ -13,7 +13,7 @@ sections:
   - title:    Changelog
     prefix:   /changelog
     type:     markdown
-    files:    'doc/changelog/**/*.md'
+    files:    'CHANGELOG.md'
   - title:    API docs
     prefix:   /api2
     type:     jsdoc
@@ -25,10 +25,10 @@ links:
     href:  https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user
   - title: Slack Channel
     href:  https://academy.datastax.com/slack
-  - title: Npm
-    href:  https://www.npmjs.org/package/dse-graph
 versions:
-  - name: '1.1'
+  - name: '2.0'
     ref: 'master'
+  - name: '1.1'
+    ref: '1.1'
   - name: '1.0'
     ref: '1.0'

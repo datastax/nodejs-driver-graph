@@ -1,2 +1,0 @@
-DataStax Enterprise Node.js Driver Extensions for DSE Graph
-Copyright DataStax, Inc.

@@ -4,12 +4,13 @@ This package supports batching multiple graph updates into a single transaction.
 included in a batch will be applied if the execution completes successfully or none of them if any of the
 operations fail.
 
-For the DSE driver to execute traversal batches, you must use an [execution profile][ep] generated using 
+For the DataStax driver to execute traversal batches, you must use an [execution profile][ep] generated using 
 `createExecutionProfile()` method.
 
 ```javascript
-const client = new dse.Client({
+const client = new Client({
   contactPoints: ['host1', 'host2'],
+  localDataCenter: 'graph_dc',
   profiles: [
     dseGraph.createExecutionProfile('my-batch-profile', { graphOptions:  { name: 'my_graph' } })
   ]
@@ -37,7 +38,7 @@ Use `queryFromBatch()` to obtain the query to execute.
 const query = dseGraph.queryFromBatch(batch);
 ```
 
-Use `executeGraph()` method from the [DSE Driver][dse-driver] to execute the batch, using the execution profile 
+Use `executeGraph()` method from the [DataStax Driver][driver] to execute the batch, using the execution profile 
 previously created using `createExecutionProfile()`.
  
  ```javascript
@@ -51,12 +52,13 @@ It's recommended that you specify the batch options like consistency, timeout an
 level, when creating the `Client` instance.
 
 ```javascript
-const client = new dse.Client({
+const client = new Client({
   contactPoints: ['host1', 'host2'],
+  localDataCenter: 'my_graph_dc',
   profiles: [
     dseGraph.createExecutionProfile('batch-quorum', { 
       graphOptions:  { name: 'my_graph' },
-      consistency: dse.types.consistencies.localQuorum
+      consistency: types.consistencies.localQuorum
     })
   ]
 });
@@ -71,18 +73,19 @@ client.executeGraph(otherBatchQuery, null, { executionProfile: 'batch-quorum' })
 ## Complete code sample
 
 ```javascript
-const dse = require('dse-driver');
-const dseGraph = require('dse-graph');
+const { Client, types } = require('cassandra-driver');
+const dseGraph = require('cassandra-driver-graph');
 const gremlin = require('gremlin');
 const __ = gremlin.process.statics;
 
 // Create an instance of Client and reuse it across your application
-const client = new dse.Client({
+const client = new Client({
   contactPoints: ['host1', 'host2'],
+  localDataCenter: 'my_graph_dc',
   profiles: [
     dseGraph.createExecutionProfile('batch-quorum', { 
       graphOptions:  { name: 'my_graph' },
-      consistency: dse.types.consistencies.localQuorum
+      consistency: types.consistencies.localQuorum
     })
   ]
 });
@@ -100,9 +103,9 @@ const batch = [
 // Obtain the query to execute
 const query = dseGraph.queryFromBatch(batch);
 
-// Execute using the DSE Driver with an execution profile.
+// Execute using the Driver with an execution profile.
 client.executeGraph(query, null, { executionProfile: 'batch-quorum' });
 ```
 
-[dse-driver]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/
-[ep]: https://docs.datastax.com/en/developer/nodejs-driver-dse/latest/features/execution-profiles/
+[driver]: https://github.com/datastax/nodejs-driver
+[ep]: https://docs.datastax.com/en/developer/nodejs-driver/latest/features/execution-profiles/
