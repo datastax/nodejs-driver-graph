@@ -1,6 +1,6 @@
 {
   "name": "cassandra-driver-graph",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0",
   "description": "DataStax Node.js Graph Extension",
   "author": "DataStax",
   "keywords": [
@@ -16,7 +16,7 @@
     "tinkerpop"
   ],
   "dependencies": {
-    "cassandra-driver": "https://repo.sjc.dsinternal.org/artifactory/local-repos/nodejs-driver/cassandra-driver-4.4.0-alpha.1-7fbe9aa4.tgz",
+    "cassandra-driver": "4.4.0",
     "gremlin": "3.2.9"
   },
   "devDependencies": {
