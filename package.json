@@ -1,6 +1,6 @@
 {
   "name": "cassandra-driver-graph",
-  "version": "2.0.0",
+  "version": "2.1.0-alpha1",
   "description": "DataStax Node.js Graph Extension",
   "author": "DataStax",
   "keywords": [
@@ -16,12 +16,13 @@
     "tinkerpop"
   ],
   "dependencies": {
-    "cassandra-driver": "4.4.0",
-    "gremlin": "3.2.9"
+    "cassandra-driver": "~4.5.0",
+    "gremlin": "3.4.6"
   },
   "devDependencies": {
-    "mocha": "~5.2.0",
-    "mocha-jenkins-reporter": "^0.4.2"
+    "mocha": "~7.1.1",
+    "mocha-jenkins-reporter": "^0.4.2",
+    "minimist": "~1.2.5"
   },
   "bugs": {
     "url": "https://groups.google.com/a/lists.datastax.com/forum/#!forum/nodejs-driver-user"

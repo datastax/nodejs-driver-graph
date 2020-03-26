@@ -17,8 +17,11 @@
 'use strict';
 
 const glv = require('gremlin');
-const DseRemoteConnection = require('./lib/dse-remote-connection');
+const { DseRemoteConnection, queryWriterFactory } = require('./lib/dse-remote-connection');
+const { TraversalBatch } = require('./lib/types');
 const { ExecutionProfile } = require('cassandra-driver');
+
+const graphLanguage = 'bytecode-json';
 
 /**
  * Returns the version of the package
@@ -57,7 +60,7 @@ exports.version = require('./package.json').version;
 exports.createExecutionProfile = function createExecutionProfile(name, options) {
   options = extend({}, options);
   // Use 'bytecode-json' by default
-  options.graphOptions = extend({ language: 'bytecode-json' }, options.graphOptions);
+  options.graphOptions = extend({ language: graphLanguage }, options.graphOptions);
   return new ExecutionProfile(name, options);
 };
 
@@ -66,22 +69,24 @@ exports.predicates = require('./lib/predicates');
 /**
  * Returns the string representation in GraphSON2 format of the traversal to be used in graph query executions.
  * @param traversal The Gremlin traversal instance to be converted to string.
+ * @param {string} [protocol] The graph protocol to use. Supported protocols are 'graphson-2.0' and 'graphson-3.0'.
  * @returns {String}
  */
-exports.queryFromTraversal = function queryFromTraversal(traversal) {
-  return DseRemoteConnection.getQuery(traversal);
+exports.queryFromTraversal = function queryFromTraversal(traversal, protocol) {
+  return DseRemoteConnection.getQuery(traversal, protocol);
 };
 
 /**
- * Returns the string representation in GraphSON2 format of the batch of traversals to be used in graph executions.
+ * Returns a representation of the batch of traversals to be used in graph executions.
  * @param {Array} batch
- * @returns {String}
+ * @returns {Object}
  */
 exports.queryFromBatch = function queryFromBatch(batch) {
   if (!Array.isArray(batch)) {
     throw new Error('Batch parameter must be an Array of traversals');
   }
-  return DseRemoteConnection.getQuery(batch);
+
+  return { value: new TraversalBatch(batch), graphLanguage, queryWriterFactory };
 };
 
 /**

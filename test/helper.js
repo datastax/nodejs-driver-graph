@@ -293,7 +293,10 @@ const helper = {
           client.execute(helper.queries.basic, next);
         },
         function createGraph(next) {
-          client.executeGraph('system.graph(name).ifNotExists().create()', {name: name}, {graphName: null}, next);
+          client.executeGraph(
+            `system.graph(name).ifNotExists()
+             ${helper.isDseGreaterThan('6.8') ? '.classicEngine()' : ''}
+             .create()`, {name: name}, {graphName: null}, next);
         },
         function _createSchema(next) {
           client.executeGraph(helper.queries.graph.modernSchema, null, {graphName: name}, next);

@@ -18,6 +18,7 @@
 
 const assert = require('assert');
 const dseGraph = require('../../index');
+const { graphProtocol } = require('../../lib/dse-remote-connection');
 const predicates = dseGraph.predicates;
 const geo = predicates.geo;
 const search = predicates.search;
@@ -57,6 +58,26 @@ describe('dseGraph', function () {
       ].forEach(function (item) {
         assert.strictEqual(dseGraph.queryFromTraversal(item[0]), item[1]);
       });
+    });
+
+    it('should return the expected graphSON3 string', function () {
+      const protocol = graphProtocol.graphson3;
+
+      const g = new tinkerpop.structure.Graph().traversal();
+      [
+        [ g.V(), '{"@type":"g:Bytecode","@value":{"step":[["V"]]}}' ],
+        [ [ g.V() ], '{"@type":"g:List","@value":[{"@type":"g:Bytecode","@value":{"step":[["V"]]}}]}' ],
+        [ g.addV('orders').property('uid', types.Uuid.fromString('9907570a-3ac5-4ec2-8894-9530e0659d83')),
+          '{"@type":"g:Bytecode","@value":{"step":[["addV","orders"],["property","uid",{"@type":"g:UUID","@value":' +
+          '"9907570a-3ac5-4ec2-8894-9530e0659d83"}]]}}']
+      ].forEach(function (item) {
+        assert.strictEqual(dseGraph.queryFromTraversal(item[0], protocol), item[1]);
+      });
+    });
+
+    it('should throw a TypeError when protocol is not supported', () => {
+      const g = new tinkerpop.structure.Graph().traversal();
+      assert.throws(() => dseGraph.queryFromTraversal(g.V(), 'abc'), /Protocol '.*' not supported/);
     });
   });
 });
