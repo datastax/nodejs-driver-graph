@@ -26,8 +26,10 @@ links:
   - title: Slack Channel
     href:  https://academy.datastax.com/slack
 versions:
-  - name: '2.0'
+  - name: '2.1'
     ref: 'master'
+  - name: '2.0'
+    ref: '2.0'
   - name: '1.1'
     ref: '1.1'
   - name: '1.0'

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+
+2020-03-16
+
+- [NODEJS-447] - Fluent API: Bump dependency to TinkerPop 3.4
+- [NODEJS-591] - Graph Fluent API: Add support for DSE 6.8
+
 ## 2.0.0
 
 2020-01-15
