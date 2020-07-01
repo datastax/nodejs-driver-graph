@@ -11,6 +11,7 @@ def initializeEnvironment() {
   env.GITHUB_BRANCH_URL = "${GITHUB_PROJECT_URL}/tree/${env.BRANCH_NAME}"
   env.GITHUB_COMMIT_URL = "${GITHUB_PROJECT_URL}/commit/${env.GIT_COMMIT}"
   env.NODEJS_VERSION_FULL = nodeVersions[env.NODEJS_VERSION]
+  env.TEST_DSE_VERSION = "${env.CCM_VERSION}"
 
   sh label: 'Assign Node.js global environment', script: '''#!/bin/bash -lex
     nodenv versions
@@ -58,6 +59,8 @@ def executeTests() {
     set -o allexport
     . ${HOME}/environment.txt
     set +o allexport
+
+    echo "Using DSE VERSION: ${TEST_DSE_VERSION} (${CCM_VERSION})"
 
     npm run-script ci
   '''
@@ -263,7 +266,6 @@ pipeline {
     SIMULACRON_PATH = '/home/jenkins/simulacron.jar'
     CCM_PATH = '/home/jenkins/ccm'
     CCM_ENVIRONMENT_SHELL = '/usr/local/bin/ccm_environment.sh'
-    TEST_DSE_VERSION = "${env.CCM_VERSION}"
   }
 
   stages {
