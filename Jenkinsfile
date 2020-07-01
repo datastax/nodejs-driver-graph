@@ -59,6 +59,7 @@ def executeTests() {
     . ${HOME}/environment.txt
     set +o allexport
 
+    export TEST_DSE_VERSION=${CCM_VERSION}
     echo "Using DSE VERSION: ${TEST_DSE_VERSION} (${CCM_VERSION})"
 
     npm run-script ci
@@ -265,10 +266,6 @@ pipeline {
     SIMULACRON_PATH = '/home/jenkins/simulacron.jar'
     CCM_PATH = '/home/jenkins/ccm'
     CCM_ENVIRONMENT_SHELL = '/usr/local/bin/ccm_environment.sh'
-    TEST_DSE_VERSION = """${sh(
-            returnStdout: true,
-            script: 'echo "${CCM_VERSION}"'
-        )}"""
   }
 
   stages {
