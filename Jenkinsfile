@@ -3,15 +3,8 @@
 
 def initializeEnvironment() {
   def nodeVersions = ['8': '8.16.2', '10': '10.17.0', '12': '12.13.0']
-  env.DRIVER_DISPLAY_NAME = 'Cassandra Node.js Driver'
+  env.DRIVER_DISPLAY_NAME = 'Node.js Driver extensions for DSE Graph'
   env.DRIVER_METRIC_TYPE = 'oss'
-  if (env.GIT_URL.contains('riptano/nodejs-driver')) {
-    env.DRIVER_DISPLAY_NAME = 'private ' + env.DRIVER_DISPLAY_NAME
-    env.DRIVER_METRIC_TYPE = 'oss-private'
-  } else if (env.GIT_URL.contains('nodejs-dse-driver')) {
-    env.DRIVER_DISPLAY_NAME = 'DSE Node.js Driver'
-    env.DRIVER_METRIC_TYPE = 'dse'
-  }
 
   env.GIT_SHA = "${env.GIT_COMMIT.take(7)}"
   env.GITHUB_PROJECT_URL = "https://${GIT_URL.replaceFirst(/(git@|http:\/\/|https:\/\/)/, '').replace(':', '/').replace('.git', '')}"
@@ -270,7 +263,7 @@ pipeline {
     SIMULACRON_PATH = '/home/jenkins/simulacron.jar'
     CCM_PATH = '/home/jenkins/ccm'
     CCM_ENVIRONMENT_SHELL = '/usr/local/bin/ccm_environment.sh'
-    TEST_DSE_VERSION = env.CCM_VERSION
+    TEST_DSE_VERSION = "${env.CCM_VERSION}"
   }
 
   stages {
